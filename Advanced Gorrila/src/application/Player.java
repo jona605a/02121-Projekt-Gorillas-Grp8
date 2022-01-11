@@ -1,5 +1,6 @@
 package application;
 
+import javafx.geometry.Bounds;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
@@ -11,6 +12,7 @@ public class Player {
     private double posX, posY;
     private ArrayList<Castable> castables = new ArrayList<Castable>();
     private Circle hitBox = new Circle();
+    private Castable selectedCastable;
 
     Player(int hp, String name, double x, double y){
         hitPoints = hp;
@@ -19,13 +21,38 @@ public class Player {
         posY = y;
         castables.add(new Banana(x, y));
         hitBox.setRadius(10);
-        hitBox.setCenterX(x - 10);
-        hitBox.setCenterY(y - 10);
-
+        hitBox.setCenterX(x);
+        hitBox.setCenterY(y);
+        selectedCastable = new Banana(posX + 15, posY - 15);
 
     }
 
+    public boolean colision(double x, double y){
+        return hitBox.contains(x, y);
+    }
+
+    boolean collision(Bounds localBounds) {
+        return hitBox.intersects(localBounds);
+    }
+
+
     public Circle getHitBox() {
         return hitBox;
+    }
+
+    public double getPosX() {
+        return posX;
+    }
+
+    public double getPosY() {
+        return posY;
+    }
+
+    public int getHitPoints() {
+        return hitPoints;
+    }
+
+    public Castable getSelectedCastable() {
+        return selectedCastable;
     }
 }

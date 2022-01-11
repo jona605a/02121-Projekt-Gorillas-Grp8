@@ -1,35 +1,15 @@
 package application;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import javafx.util.Duration;
-
-
-import java.awt.event.KeyEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 public class MenuController {
 
@@ -76,7 +56,7 @@ public class MenuController {
         button.setLayoutX(width/2);
         button.setLayoutY(100);
         button.setText("Ligegyldigt");
-        button.setOnAction(this::goToLevel);
+        button.setOnAction(this::goToGame);
         menu.getChildren().add(button);
 
 
@@ -92,9 +72,13 @@ public class MenuController {
     }
 
 
-    public void goToLevel(ActionEvent event){
+    public void goToGame(ActionEvent event){
+        gameObject.getLevel().setupLevel();
+        gameObject.setPlayer1Turn(true);
+        gameObject.setGameRunning(true);
         stage.setScene(gameObject.getLevel().getGameScene());
         stage.setMaximized(true);
+        gameObject.gameLoop();
     }
 
 }

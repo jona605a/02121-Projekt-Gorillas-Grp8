@@ -1,15 +1,36 @@
 package application;
 
+import javafx.scene.shape.Circle;
+
 public class Castable {
-    protected double layoutX, layoutY;
+    protected double x, y;
     protected double velocityX, velocityY;
+    protected Circle circle;
 
 
     Castable(double x, double y){
-        layoutX = x;
-        layoutY = y;
+        this.x = x;
+        this.y = y;
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setX(double x) {
+        circle.setCenterX(x);
+        this.x = x;
+    }
+
+
+    public void setY(double y) {
+        circle.setCenterY(y);
+        this.y = y;
+    }
 
     public double getVelocityX() {
         return velocityX;
@@ -19,12 +40,15 @@ public class Castable {
         return velocityY;
     }
 
-    public void setVelocity(double vx){
+    public void setVelocityX(double vx){
         velocityX = vx;
     }
 
-    public void setLayoutY(double vy){
+    public void setVelocityY(double vy){
         velocityY = vy;
     }
 
+    public Circle getCircle() {
+        return circle;
+    }
 }

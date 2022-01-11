@@ -1,5 +1,6 @@
 package application;
 
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -24,6 +25,12 @@ public class Building extends StaticEntity{
     public boolean collision(double x, double y) {
         return shape.contains(x, y);
     }
+
+    @Override
+    boolean collision(Bounds localBounds) {
+        return shape.intersects(localBounds);
+    }
+
 
     @Override
     public Node getShape(){
