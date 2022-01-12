@@ -1,9 +1,11 @@
 package application;
 
 import javafx.geometry.Bounds;
+import javafx.scene.image.Image;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
+import javax.swing.text.html.ImageView;
 import java.util.ArrayList;
 
 public class Player {
@@ -13,6 +15,8 @@ public class Player {
     private ArrayList<Castable> castables = new ArrayList<Castable>();
     private Circle hitBox = new Circle();
     private Castable selectedCastable;
+    private ImageView sprite;
+    private Image castingSprite;
 
     Player(int hp, String name, double x, double y){
         hitPoints = hp;
@@ -27,7 +31,7 @@ public class Player {
 
     }
 
-    public boolean colision(double x, double y){
+    public boolean collision(double x, double y){
         return hitBox.contains(x, y);
     }
 

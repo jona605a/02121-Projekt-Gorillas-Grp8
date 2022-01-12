@@ -1,16 +1,23 @@
 package application;
 
 import javafx.geometry.Bounds;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 
 public class GUIHelpers {
 
-    public static int textSize(Label label){
+    public static double textSize(Label label){
         Text tmp = new Text(label.getText());
         tmp.setFont(label.getFont());
-        return (int) tmp.getBoundsInLocal().getWidth();
+        return tmp.getBoundsInLocal().getWidth();
+    }
+
+    public static double textSize(Button button){
+        Text tmp = new Text(button.getText());
+        tmp.setFont(button.getFont());
+        return tmp.getBoundsInLocal().getWidth();
     }
 
     public static boolean isOutOfScreen(Bounds localBounds, double screenX, double screenY){
@@ -23,7 +30,6 @@ public class GUIHelpers {
     public static Polygon createArrow(double x, double y, double width, double height, double angle){
         double sin = Math.sin(angle);
         double cos = Math.cos(angle);
-        System.out.println(sin + " " + cos);
         double arrowPercentage = 0.7;
         Polygon arrow = new Polygon();
         double arrowWidth = width / 2;
