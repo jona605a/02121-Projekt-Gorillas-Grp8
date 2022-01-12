@@ -4,7 +4,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.robot.Robot;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -31,6 +34,9 @@ public class GameObject {
     EventHandler<MouseEvent> aimHandler;
     EventHandler<MouseEvent> firePressed;
     EventHandler<MouseEvent> fireReleased;
+    Robot robot = new Robot();
+    Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
+    private boolean outOfScreen = false;
 
 
     GameObject(Stage mainStage){
@@ -38,6 +44,8 @@ public class GameObject {
         this.mainStage = mainStage;
         player1Turn = true;
         gameRunning = false;
+        outOfScreenTrackArrow.setFill(Color.YELLOW);
+        outOfScreenTrackArrow.setStroke(Color.BLACK);
 
     }
 
@@ -50,10 +58,13 @@ public class GameObject {
 
     public void gameLoop(){
         level.getGame().getChildren().add(aimLine);
+
         if(player1Turn){
             playerTurn(level.getPlayer1());
+            drawAimline(robot.getMouseX(), robot.getMouseY(), level.getPlayer1().getPosX(),level.getPlayer1().getPosY());
         }else{
             playerTurn(level.getPlayer2());
+            drawAimline(robot.getMouseX(), robot.getMouseY(), level.getPlayer2().getPosX(),level.getPlayer2().getPosY());
         }
         player1Turn = !player1Turn;
 
@@ -126,7 +137,21 @@ public class GameObject {
 
 
         }
-        stop = stop || GUIHelpers.isOutOfScreen(castable.getCircle().getBoundsInLocal(), screenX, screenY);
+
+        if(!outOfScreen && (castable.getCircle().getCenterY() < 0)){
+            outOfScreen = true;
+            level.getGame().getChildren().add(outOfScreenTrackArrow);
+        }
+        if(outOfScreen){
+            outOfScreenTrackArrow.setLayoutX(castable.getX() - outOfScreenTrackArrow.getBoundsInLocal().getWidth()/2);
+            outOfScreenTrackArrow.setLayoutY(outOfScreenTrackArrow.getBoundsInLocal().getHeight());
+        }
+        if(outOfScreen && (castable.getCircle().getCenterY() > 0)){
+            level.getGame().getChildren().remove(outOfScreenTrackArrow);
+            outOfScreen = false;
+        }
+
+        stop = stop || GUIHelpers.isOutOfGame(castable.getCircle().getBoundsInLocal(), screenX, screenY);
         stop = stop || level.getPlayer1().collision(castable.getCircle().getBoundsInLocal());
         stop = stop || level.getPlayer2().collision(castable.getCircle().getBoundsInLocal());
         if(stop){
@@ -137,19 +162,31 @@ public class GameObject {
             aimLine.setStartY(0);
             aimLine.setEndX(0);
             aimLine.setEndY(0);
+            level.getGame().getChildren().remove(outOfScreenTrackArrow);
+            outOfScreen = false;
             gameLoop();
         }
 
     }
 
     public void drawAimline(MouseEvent event, double playerX, double playerY){
-        double angleTurn = 1;
-        if(playerX > event.getX()) angleTurn = -1;
+
         double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
-        aimLine.setStartX(playerX + 15 * angleTurn * Math.cos(angle));
-        aimLine.setStartY(playerY - 15 * angleTurn * Math.sin(angle));
-        aimLine.setEndX(playerX + angleTurn * Math.cos(angle) * 100);
-        aimLine.setEndY(playerY - angleTurn * Math.sin(angle) * 100);
+        if(playerX > event.getX()) angle += Math.PI;
+        aimLine.setStartX(playerX + 15 * Math.cos(angle));
+        aimLine.setStartY(playerY - 15 * Math.sin(angle));
+        aimLine.setEndX(playerX + Math.cos(angle) * 100);
+        aimLine.setEndY(playerY - Math.sin(angle) * 100);
+
+    }
+
+    public void drawAimline(double mouseX, double mouseY, double playerX, double playerY){
+        double angle = Math.atan((playerY - mouseY) / (mouseX - playerX));
+        if(playerX > mouseX) angle += Math.PI;
+        aimLine.setStartX(playerX + 15 * Math.cos(angle));
+        aimLine.setStartY(playerY - 15 * Math.sin(angle));
+        aimLine.setEndX(playerX + Math.cos(angle) * 100);
+        aimLine.setEndY(playerY - Math.sin(angle) * 100);
 
     }
 
@@ -157,19 +194,19 @@ public class GameObject {
 
     public void drawFireLine(MouseEvent event, double playerX, double playerY){
         double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
-        double angleTurn = 1;
-        if(playerX > event.getX()) angleTurn = -1;
+        if(playerX > event.getX()) angle += Math.PI;
+
         if(!firing){
-            aimLine.setStartX(playerX + 15 * angleTurn * Math.cos(angle));
-            aimLine.setStartY(playerY - 15 * angleTurn * Math.sin(angle));
-            aimLine.setEndX(playerX + 15 * angleTurn * Math.cos(angle));
-            aimLine.setEndY(playerY - 15 * angleTurn * Math.sin(angle));
+            aimLine.setStartX(playerX + 15 * Math.cos(angle));
+            aimLine.setStartY(playerY - 15 * Math.sin(angle));
+            aimLine.setEndX(playerX + 15 * Math.cos(angle));
+            aimLine.setEndY(playerY - 15 * Math.sin(angle));
             firing = true;
         }
 
-        if(aimLine.getEndX() - aimLine.getStartX() < Math.cos(angle) * 99){
-            aimLine.setEndX(aimLine.getEndX() + angleTurn * Math.cos(angle) * 3);
-            aimLine.setEndY(aimLine.getEndY() - angleTurn * Math.sin(angle) * 3);
+        if(Math.abs(aimLine.getEndX() - aimLine.getStartX()) < Math.abs(Math.cos(angle) * 99)){
+            aimLine.setEndX(aimLine.getEndX() +  Math.cos(angle) * 3);
+            aimLine.setEndY(aimLine.getEndY() -  Math.sin(angle) * 3);
         }else{
             fireLineTimeline.stop();
         }

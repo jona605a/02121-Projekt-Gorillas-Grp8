@@ -32,7 +32,6 @@ public class Level {
             statics.add(new Building(buildingWidth * i, screenY - offset , buildingWidth,offset, Color.BEIGE));
             game.getChildren().add(statics.get(i).getShape());
         }
-        System.out.println(statics.get(0).getY());
         player1 = new Player(10,"Player 1",buildingWidth / 2, statics.get(0).getY() - 10);
         player2 = new Player(10,"Player 2",buildingWidth / 2 + buildingWidth * (numOfBuildings - 1), statics.get((numOfBuildings - 1)).getY() - 10);
         game.getChildren().add(player1.getHitBox());

@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -20,6 +21,7 @@ public class MenuController {
     Font menuFont  = Font.loadFont(getClass().getResourceAsStream("/Fonts/Tr2n.ttf"), 14);
     Button button = new Button();
     double height, width;
+
 
     Label menuTitle = new Label();
 
@@ -58,6 +60,7 @@ public class MenuController {
         button.setText("Ligegyldigt");
         button.setOnAction(this::goToGame);
         menu.getChildren().add(button);
+
 
 
 
