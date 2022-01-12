@@ -28,15 +28,16 @@ public class Level {
         gameScene = new Scene(game, screenX, screenY);
         buildingWidth = x / numOfBuildings;
         for(int i = 0; i < numOfBuildings; i++){
-            double offset =  y * (0.4 + r.nextDouble(-0.2,0.2));
+            double offset =  y * (0.2 + r.nextDouble(0,0.3));
             statics.add(new Building(buildingWidth * i, screenY - offset , buildingWidth,offset, Color.BEIGE));
             game.getChildren().add(statics.get(i).getShape());
         }
-        player1 = new Player(10,"Player 1",buildingWidth / 2, statics.get(0).getY() - 10);
-        player2 = new Player(10,"Player 2",buildingWidth / 2 + buildingWidth * (numOfBuildings - 1), statics.get((numOfBuildings - 1)).getY() - 10);
-        game.getChildren().add(player1.getHitBox());
-        game.getChildren().add(player2.getHitBox());
-
+        player1 = new Player(10,"Player 1",buildingWidth / 2, statics.get(0).getY());
+        player2 = new Player(10,"Player 2",buildingWidth / 2 + buildingWidth * (numOfBuildings - 1), statics.get((numOfBuildings - 1)).getY());
+        game.getChildren().add(player1.getNameLabel());
+        game.getChildren().add(player2.getNameLabel());
+        game.getChildren().add(player1.getSpriteView());
+        game.getChildren().add(player2.getSpriteView());
     }
 
     public void setupLevel(){
