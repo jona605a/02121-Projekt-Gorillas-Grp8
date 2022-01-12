@@ -37,6 +37,8 @@ public class GameObject {
     Robot robot = new Robot();
     Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
     private boolean outOfScreen = false;
+    private int aimlineMinRadius = 20;
+    private int aimlineMaxRadius = 100;
 
 
     GameObject(Stage mainStage){
@@ -72,59 +74,88 @@ public class GameObject {
     }
 
     public void playerTurn(Player player){
-        aimHandler  = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                drawAimline(event, player.getPosX(), player.getPosY());
-            }
-        };
-        firePressed = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                startFireIncrease(event, player.getPosX(), player.getPosY());
-            }
-        };
-
-        fireReleased = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                fireCastable(event, player);
-            }
-        };
+        aimHandler  = event -> drawAimline(event, player.getPosX(), player.getPosY());
+        firePressed = event -> startFireIncrease(event, player);
+        fireReleased = event -> fireCastable(event, player);
 
         level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
         level.getGame().addEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
-        level.getGame().addEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
-
+        //level.getGame().addEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
 
     }
 
-    public void startFireIncrease(MouseEvent event, double playerX, double playerY){
-        fireLineTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0 / 24), (e) -> {drawFireLine(event, playerX, playerY);}));
+    public void drawAimline(MouseEvent event, double playerX, double playerY){
+        double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
+        if(playerX > event.getX()) angle += Math.PI;
+        aimLine.setStartX(playerX + aimlineMinRadius * Math.cos(angle));
+        aimLine.setStartY(playerY - aimlineMinRadius * Math.sin(angle));
+        aimLine.setEndX(playerX + Math.cos(angle) * aimlineMaxRadius);
+        aimLine.setEndY(playerY - Math.sin(angle) * aimlineMaxRadius);
+
+    }
+    public void drawAimline(double mouseX, double mouseY, double playerX, double playerY){
+        double angle = Math.atan((playerY - mouseY) / (mouseX - playerX));
+        if(playerX > mouseX) angle += Math.PI;
+        aimLine.setStartX(playerX + aimlineMinRadius * Math.cos(angle));
+        aimLine.setStartY(playerY - aimlineMinRadius * Math.sin(angle));
+        aimLine.setEndX(playerX + Math.cos(angle) * aimlineMaxRadius);
+        aimLine.setEndY(playerY - Math.sin(angle) * aimlineMaxRadius);
+    }
+
+    public void startFireIncrease(MouseEvent event, Player player){
+        // Triggers when the mouse is pressed:
+        // Begins drawing a growing line towards the mouse
+        player.setSprite(player.gorilla2);
+        fireLineTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0 / 24), (e) -> {drawFireLine(event, player.getPosX(), player.getPosY());}));
         level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
         fireLineTimeline.setCycleCount(Timeline.INDEFINITE);
         fireLineTimeline.play();
     }
 
+    public void drawFireLine(MouseEvent event, double playerX, double playerY){
+        double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
+        if(playerX > event.getX()) angle += Math.PI;
+
+        if(!firing){
+            aimLine.setStartX(playerX + aimlineMinRadius * Math.cos(angle));
+            aimLine.setStartY(playerY - aimlineMinRadius * Math.sin(angle));
+            aimLine.setEndX(playerX + aimlineMinRadius * Math.cos(angle));
+            aimLine.setEndY(playerY - aimlineMinRadius * Math.sin(angle));
+            firing = true;
+            // When firing, listen for when the mouse is released
+            level.getGame().addEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
+        }
+
+        if(Math.abs(aimLine.getEndX() - aimLine.getStartX()) < Math.abs(Math.cos(angle) * 99)){
+            aimLine.setEndX(aimLine.getEndX() +  Math.cos(angle) * 3);
+            aimLine.setEndY(aimLine.getEndY() -  Math.sin(angle) * 3);
+        }else{
+            fireLineTimeline.stop();
+        }
+    }
+
     public void fireCastable(MouseEvent event, Player player){
+        // Triggers when the mouse is released:
+        // Pauses the players' interaction and animates the throw of the castable.
+        player.setSprite(player.gorilla1);
         fireLineTimeline.stop();
         level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED,firePressed);
         level.getGame().removeEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
 
-        thrownCastableTimeline = new Timeline(new KeyFrame(Duration.millis(1000/24),(e) -> {animateCastable(player.getSelectedCastable());}));
+        Castable selectedCastable = player.getSelectedCastable();
+        thrownCastableTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/24),(e) -> {animateCastable(selectedCastable);}));
         thrownCastableTimeline.setCycleCount(Timeline.INDEFINITE);
 
-        player.getSelectedCastable().setVelocityX((aimLine.getEndX() - aimLine.getStartX()) * 10 / 24);
-        player.getSelectedCastable().setVelocityY((aimLine.getStartY() - aimLine.getEndY()) * 10 / 24);
-        player.getSelectedCastable().setX(player.getPosX() + 15);
-        player.getSelectedCastable().setY(player.getPosY() - 15);
+        selectedCastable.setVelocityX((aimLine.getEndX() - aimLine.getStartX()) * 10.0 / 24);
+        selectedCastable.setVelocityY((aimLine.getStartY() - aimLine.getEndY()) * 10.0 / 24);
+        selectedCastable.setX(aimLine.getStartX());
+        selectedCastable.setY(aimLine.getStartY());
 
-        level.getGame().getChildren().add(player.getSelectedCastable().getCircle());
+        level.getGame().getChildren().add(selectedCastable.getSpriteView());
+        //level.getGame().getChildren().add(selectedCastable.getCircle());
         level.getGame().getChildren().remove(aimLine);
         firing = false;
         thrownCastableTimeline.play();
-
-
     }
 
     public void animateCastable(Castable castable){
@@ -134,8 +165,6 @@ public class GameObject {
         castable.setVelocityY(castable.getVelocityY() + gravity / 24);
         for(StaticEntity statics : level.getStatics()){
             stop = stop || statics.collision(castable.getCircle().getLayoutBounds());
-
-
         }
 
         if(!outOfScreen && (castable.getCircle().getCenterY() < 0)){
@@ -155,7 +184,8 @@ public class GameObject {
         stop = stop || level.getPlayer1().collision(castable.getCircle().getBoundsInLocal());
         stop = stop || level.getPlayer2().collision(castable.getCircle().getBoundsInLocal());
         if(stop){
-            level.getGame().getChildren().remove(castable.getCircle());
+            level.getGame().getChildren().remove(castable.getSpriteView());
+            //level.getGame().getChildren().remove(castable.getCircle());
             thrownCastableTimeline.stop();
             level.getGame().removeEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
             aimLine.setStartX(0);
@@ -166,53 +196,6 @@ public class GameObject {
             outOfScreen = false;
             gameLoop();
         }
-
-    }
-
-    public void drawAimline(MouseEvent event, double playerX, double playerY){
-
-        double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
-        if(playerX > event.getX()) angle += Math.PI;
-        aimLine.setStartX(playerX + 15 * Math.cos(angle));
-        aimLine.setStartY(playerY - 15 * Math.sin(angle));
-        aimLine.setEndX(playerX + Math.cos(angle) * 100);
-        aimLine.setEndY(playerY - Math.sin(angle) * 100);
-
-    }
-
-    public void drawAimline(double mouseX, double mouseY, double playerX, double playerY){
-        double angle = Math.atan((playerY - mouseY) / (mouseX - playerX));
-        if(playerX > mouseX) angle += Math.PI;
-        aimLine.setStartX(playerX + 15 * Math.cos(angle));
-        aimLine.setStartY(playerY - 15 * Math.sin(angle));
-        aimLine.setEndX(playerX + Math.cos(angle) * 100);
-        aimLine.setEndY(playerY - Math.sin(angle) * 100);
-
-    }
-
-
-
-    public void drawFireLine(MouseEvent event, double playerX, double playerY){
-        double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
-        if(playerX > event.getX()) angle += Math.PI;
-
-        if(!firing){
-            aimLine.setStartX(playerX + 15 * Math.cos(angle));
-            aimLine.setStartY(playerY - 15 * Math.sin(angle));
-            aimLine.setEndX(playerX + 15 * Math.cos(angle));
-            aimLine.setEndY(playerY - 15 * Math.sin(angle));
-            firing = true;
-        }
-
-        if(Math.abs(aimLine.getEndX() - aimLine.getStartX()) < Math.abs(Math.cos(angle) * 99)){
-            aimLine.setEndX(aimLine.getEndX() +  Math.cos(angle) * 3);
-            aimLine.setEndY(aimLine.getEndY() -  Math.sin(angle) * 3);
-        }else{
-            fireLineTimeline.stop();
-        }
-
-
-
 
     }
 
