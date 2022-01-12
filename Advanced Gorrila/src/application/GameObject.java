@@ -100,7 +100,7 @@ public class GameObject {
     }
 
     public void startFireIncrease(MouseEvent event, double playerX, double playerY){
-        fireLineTimeline = new Timeline(new KeyFrame(Duration.millis(1000 / 24), (e) -> {drawFireLine(event, playerX, playerY);}));
+        fireLineTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0 / 24), (e) -> {drawFireLine(event, playerX, playerY);}));
         level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
         fireLineTimeline.setCycleCount(Timeline.INDEFINITE);
         fireLineTimeline.play();

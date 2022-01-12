@@ -57,7 +57,7 @@ public class MenuController {
         // add button
         button.setLayoutX(width/2);
         button.setLayoutY(100);
-        button.setText("Ligegyldigt");
+        button.setText("Start Game");
         button.setOnAction(this::goToGame);
         menu.getChildren().add(button);
 
@@ -76,7 +76,7 @@ public class MenuController {
 
 
     public void goToGame(ActionEvent event){
-        gameObject.getLevel().setupLevel();
+        gameObject.getLevel().setupLevel(); // does nothing?
         gameObject.setPlayer1Turn(true);
         gameObject.setGameRunning(true);
         stage.setScene(gameObject.getLevel().getGameScene());
