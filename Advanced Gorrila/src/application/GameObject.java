@@ -80,7 +80,7 @@ public class GameObject {
 
         level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
         level.getGame().addEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
-        //level.getGame().addEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
+
 
     }
 

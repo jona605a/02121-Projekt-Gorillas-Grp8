@@ -27,8 +27,7 @@ public class Main extends Application {
 
         gameObject.enterMenu();
 
-        stage.setResizable(false);
-        stage.show();
+
 
     }
 
