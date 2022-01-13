@@ -100,4 +100,12 @@ public class Player {
         this.name = name;
         nameLabel.setText(name);
     }
+    
+    public void addCastable(Castable castable) {
+    	this.castables.add(castable);
+    }
+    
+    public void addHitPoints(int hp) {
+    	this.hitPoints += hp;
+    }
 }
