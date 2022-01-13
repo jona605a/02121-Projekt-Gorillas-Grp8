@@ -91,4 +91,13 @@ public class Player {
     public Castable getSelectedCastable() {
         return selectedCastable;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        nameLabel.setText(name);
+    }
 }
