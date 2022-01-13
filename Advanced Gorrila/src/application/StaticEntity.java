@@ -14,6 +14,10 @@ public abstract class StaticEntity{
 
     abstract Node getShape();
 
+    abstract Node[] getSprites();
+
+    abstract Node getSprite();
+
     public double getX() {
         return x;
     }

@@ -40,7 +40,17 @@ public class PowerUp extends StaticEntity {
 	public Node getShape() {
 		return shape;
 	}
-	
+
+	@Override
+	Node[] getSprites() {
+		return new Node[0];
+	}
+
+	@Override
+	Node getSprite() {
+		return null;
+	}
+
 	public void activatePowerUp(Castable castable, Player player) {
 		int powerUp = randomNumber(6);
 		

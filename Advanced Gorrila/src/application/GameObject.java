@@ -41,7 +41,7 @@ public class GameObject {
     private int aimlineMaxRadius = 100;
 
 
-    GameObject(Stage mainStage){
+    GameObject(Stage mainStage) throws Exception {
 
         this.mainStage = mainStage;
         player1Turn = true;
