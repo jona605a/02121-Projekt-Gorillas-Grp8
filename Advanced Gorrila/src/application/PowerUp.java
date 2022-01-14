@@ -4,22 +4,15 @@ import java.util.Random;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
-
-/*
- * HOW SHOULD IT BE IMPLEMENTED - A POWERUP CHOOSES A RANDOM ACTION OR DIFFERENT TYPES OF POWERUPS?
- * 
- * List of powerup ideas:
- * Make castable faster/slower (just this castable or all castables of this player or all castables of both players?)
- * Make castable(s) deal more dmg (how much?)
- * Current player gets another turn
- * Current player gets extra special ammo (if different types of powerups - different powerups for each ammo or just random?)
- * Current player gets more hp (how much?)
- */
 
 public class PowerUp extends StaticEntity {
 	
 	private Circle shape;
+	private Image sprite;
+	private ImageView spriteView;
 	
 	
 	PowerUp(double x, double y, double r) {
@@ -48,10 +41,10 @@ public class PowerUp extends StaticEntity {
 
 	@Override
 	Node getSprite() {
-		return null;
+		return spriteView;
 	}
 
-	public void activatePowerUp(Castable castable, Player player) {
+	public void activatePowerUp(Castable castable, Player player, GameObject gameObject) {
 		int powerUp = randomNumber(6);
 		
 		switch(powerUp) { 
@@ -65,7 +58,7 @@ public class PowerUp extends StaticEntity {
 				powerfulBullet(castable);
 				break;
 			case 3:
-				secondTurn(player);
+				secondTurn(gameObject);
 				 break;
 			case 4:
 				extraAmmo(player);
@@ -81,14 +74,14 @@ public class PowerUp extends StaticEntity {
 	private void fastBullet(Castable castable) {
 		// make castable faster
 		castable.setVelocityX(castable.getVelocityX() * 2);
-		castable.setVelocityY(castable.getVelocityY() * 2); // Maybe should not affect y-veloicty??
+		castable.setVelocityY(castable.getVelocityY() * 2);
 		
 	}
 	
 	private void slowBullet(Castable castable) {
 		// make castable slower
 		castable.setVelocityX(castable.getVelocityX() * .5);
-		castable.setVelocityY(castable.getVelocityY() * .5); // Maybe should not affect y-veloicty??
+		castable.setVelocityY(castable.getVelocityY() * .5);
 	}
 	
 	private void powerfulBullet(Castable castable) {
@@ -96,13 +89,15 @@ public class PowerUp extends StaticEntity {
 		
 	}
 	
-	private void secondTurn(Player player) {
+	private void secondTurn(GameObject gameObject) {
 		// give the current player another turn
+		// changes the turn to the other player so that when the current turn ends the current player will have another turn
+		gameObject.setPlayer1Turn(!gameObject.isPlayer1Turn());
 	}
 	
 	private void extraAmmo(Player player) {
 		// gives the current player extra special ammo
-		player.addCastable(new Banana(player.getPosX(), player.getPosY()));
+		player.addCastable(new Coconut(player.getPosX(), player.getPosY()));
 	}
 	
 	private void moreHP(Player player) {

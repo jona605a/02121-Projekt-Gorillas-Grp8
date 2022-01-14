@@ -207,6 +207,8 @@ public class GameObject {
         return level;
     }
 
+    public boolean isPlayer1Turn() { return this.player1Turn;}
+
     public void setPlayer1Turn(boolean player1Turn) {
         this.player1Turn = player1Turn;
     }
