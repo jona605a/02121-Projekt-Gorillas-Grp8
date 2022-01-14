@@ -8,17 +8,21 @@ public class Castable {
     protected double x, y;
     protected double velocityX, velocityY;
     protected Circle circle;
+    private int damage;
+    private double weight;
     private ImageView spriteView;
     public Image banana = new Image("/Images/Banan.png", 20, 20, true, false);
+    public Image coconut = new Image("/Images/Coconut.png", 20, 20, true, false);
     private Image currentImage;
 
 
-    Castable(double x, double y){
+    Castable(double x, double y, int damage, double weight){
         this.x = x;
         this.y = y;
+        this.damage = damage;
+        this.weight = weight;
         spriteView = new ImageView();
         spriteView.setPreserveRatio(true);
-        setSprite(banana);
     }
 
     public void setX(double x) {
@@ -71,5 +75,13 @@ public class Castable {
 
     public Circle getCircle() {
         return circle;
+    }
+    
+    public int getDamage() {
+    	return damage;
+    }
+    
+    public double getWeight() {
+    	return weight;
     }
 }
