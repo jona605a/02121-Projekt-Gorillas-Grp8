@@ -2,18 +2,25 @@ package application;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.AudioClip;
 
 public class Sound {
 
     private MediaPlayer mediaPlayer;
 
-    Sound(String path) {
+    public Sound(String path) {
         Media sound = new Media(path);
         mediaPlayer = new MediaPlayer(sound);
     }
 
     public void play() {
         mediaPlayer.play();
+    }
+
+    public static void play(String path) {
+        // For quick sound effects
+        AudioClip clip = new AudioClip(path);
+        clip.play();
     }
 
     public void setVolume(double volume) {
