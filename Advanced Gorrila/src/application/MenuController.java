@@ -12,7 +12,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.QuadCurve;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -78,6 +77,7 @@ public class MenuController {
 
         stage.setTitle("Gorillas");
         stage.getIcons().add(new Image(("/Images/Gorilla1.png")));
+        Music music = new Music(new String[]{"/Sounds/RetroFunk.mp3", "/Sounds/BossTime.mp3"});
         stage.setScene(mainMenu.menuScene);
         stage.setMaximized(true);
         stage.setResizable(false);
