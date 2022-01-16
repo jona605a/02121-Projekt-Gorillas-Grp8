@@ -73,11 +73,7 @@ public class Music {
     }
 
     private Sound getCurrentSong() {
-        for (Sound song : this.musicList) {
-            if (song.isPlaying()) return song;
-        }
-
-        return null;
+        return this.musicList[this.currentSongIndex];
     }
 
     private void onSongFinished() {
