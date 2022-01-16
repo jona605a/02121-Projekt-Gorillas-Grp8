@@ -44,12 +44,13 @@ public class Music {
     }
 
     public void continueSong() {
-        if (this.getCurrentSong() == null) this.playSong(this.currentSongIndex);
+        Sound song = this.getCurrentSong();
+        if (!song.isPlaying()) song.play();
     }
 
     public void pauseCurrentSong() {
         Sound song = this.getCurrentSong();
-        if (song != null) song.pause();
+        if (song.isPlaying()) song.pause();
     }
 
     public void changeVolume(double newVolume) {
@@ -60,11 +61,6 @@ public class Music {
         for (Sound song : this.musicList) {
             song.setVolume(newVolume);
         }
-    }
-
-    public Sound getSongByIndex(int index) {
-        if (index >= this.musicList.length) return null;
-        return this.musicList[index];
     }
 
     public void stopCurrentSong() {
