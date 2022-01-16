@@ -155,6 +155,7 @@ public class GameObject {
         //level.getGame().getChildren().add(selectedCastable.getCircle());
         level.getGame().getChildren().remove(aimLine);
         firing = false;
+        Sound.play("/Sounds/Throw.mp3");
         thrownCastableTimeline.play();
     }
 
