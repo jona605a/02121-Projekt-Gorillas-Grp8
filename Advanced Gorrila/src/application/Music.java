@@ -1,22 +1,24 @@
 package application;
 
-import javafx.scene.media.MediaPlayer;
-
 public class Music {
 
     private Sound[] musicList;
     private int currentSongIndex = 0;
 
-    public Music(Sound[] musicList) {
-        this(musicList = musicList, 0);
+    public Music(String[] songs) {
+        this(songs, 0);
     }
 
-    public Music(Sound[] musicList, String startSongPath) {
-       this(musicList, Music.getSongIndex(musicList, startSongPath));
+    public Music(String[] songs, String startSongPath) {
+       this(songs, Music.getSongIndex(songs, startSongPath));
     }
 
-    public Music(Sound[] musicList, int startSongIndex) {
-        this.musicList = musicList;
+    public Music(String[] songs, int startSongIndex) {
+
+        musicList = new Sound[songs.length];
+        for (int i = 0; i < songs.length; i++) {
+            musicList[i] = new Sound(songs[i]);
+        }
         this.currentSongIndex = startSongIndex;
         this.playSong();
     }
@@ -87,6 +89,13 @@ public class Music {
     private static int getSongIndex(Sound[] songs, String path) {
         for (int i = 0; i < songs.length; i++) {
             if (songs[i].getPath() == path) return i;
+        }
+        return -1;
+    }
+
+    private static int getSongIndex(String[] songs, String path) {
+        for (int i = 0; i < songs.length; i++) {
+            if (songs[i] == path) return i;
         }
         return -1;
     }
