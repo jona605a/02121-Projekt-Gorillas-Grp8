@@ -33,6 +33,11 @@ public class Player {
         hitBox.setCenterX(x);
         hitBox.setCenterY(y);
         selectedCastable = new Banana(posX, posY);
+        int noOfCoconuts = 10;
+        // Adding coconuts as ammo
+        for(int i = 0; i < noOfCoconuts; i++) {
+        	castables.add(new Coconut(x, y));
+        }
 
         // Display player name
         nameLabel = new Label();
@@ -107,5 +112,19 @@ public class Player {
     
     public void addHitPoints(int hp) {
     	this.hitPoints += hp;
+    }
+    public void switchCastable() {
+    	if(castables.size() > 1) {
+    		if(selectedCastable.getWeight() == castables.get(0).getWeight()) {
+    			selectedCastable = new Coconut(posX, posY);
+    		}
+    		else {
+    			selectedCastable = new Banana(posX, posY);
+    		}
+    	}
+    }
+    
+    public void useCoconut() {
+    	castables.remove(1);
     }
 }
