@@ -113,6 +113,7 @@ public class Player {
     public void addHitPoints(int hp) {
     	this.hitPoints += hp;
     }
+
     public void switchCastable() {
     	if(castables.size() > 1) {
     		if(selectedCastable.getWeight() == castables.get(0).getWeight()) {

@@ -84,4 +84,8 @@ public class Castable {
     public double getWeight() {
     	return weight;
     }
+
+    public void setDamage(int newDamage) {
+        this.damage = newDamage;
+    }
 }
