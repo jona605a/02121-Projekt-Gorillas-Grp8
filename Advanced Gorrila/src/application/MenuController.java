@@ -77,7 +77,7 @@ public class MenuController {
 
         stage.setTitle("Gorillas");
         stage.getIcons().add(new Image(("/Images/Gorilla1.png")));
-        Music music = new Music(new String[]{"/Sounds/RetroFunk.mp3", "/Sounds/BossTime.mp3"});
+        Music music = new Music(new String[]{"/Sounds/Music/RetroFunk.mp3", "/Sounds/Music/BossTime.mp3", "/Sounds/Music/Stage3.mp3"});
         stage.setScene(mainMenu.menuScene);
         stage.setMaximized(true);
         stage.setResizable(false);
