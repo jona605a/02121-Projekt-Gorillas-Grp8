@@ -85,7 +85,8 @@ public class PowerUp extends StaticEntity {
 	}
 	
 	private void powerfulBullet(Castable castable) {
-		// make castable deal more damage
+		// make castable deal twice as much damage
+		castable.setDamage(castable.getDamage()*2);
 		
 	}
 	
