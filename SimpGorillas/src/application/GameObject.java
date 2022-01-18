@@ -14,33 +14,23 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.Scanner;
+
 
 public class GameObject {
 
-
-    private MenuController menuController = new MenuController(this);
     private Stage mainStage;
     Rectangle2D screenBounds = Screen.getPrimary().getBounds();
     private double screenX = screenBounds.getMaxX(), screenY = screenBounds.getMaxY();
     private double gravity = -9.81;
     private Level level;
-    Line aimLine = new Line(0,0,0,0);
-    QuadCurve jumpLine = new QuadCurve();
-    private boolean firing;
-    private boolean jumpMode;
-    Timeline fireLineTimeline;
     Timeline thrownCastableTimeline;
     private boolean player1Turn;
-    private boolean gameRunning;
-    EventHandler<MouseEvent> aimHandler;
-    EventHandler<MouseEvent> firePressed;
-    EventHandler<MouseEvent> fireReleased;
-    Robot robot = new Robot();
     Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
     private boolean outOfScreen = false;
-    private int aimlineMinRadius = 20;
-    private int aimlineMaxRadius = 100;
-
+    int player1_points;
+    int player2_points;
+    Scanner console = new Scanner(System.in);
 
     GameObject(Stage mainStage, double width, double height) throws Exception {
 
@@ -50,121 +40,82 @@ public class GameObject {
         mainStage.show();
 
         player1Turn = true;
-        gameRunning = false;
-        jumpMode = false;
         outOfScreenTrackArrow.setFill(Color.YELLOW);
         outOfScreenTrackArrow.setStroke(Color.BLACK);
-        level = new Level(width, height, true);
+        level = new Level(width, height);
+        screenX = width;
+        screenY = height;
     }
 
     public void start_game(){
         mainStage.setScene(level.getGameScene());
-        gameRunning = true;
-        System.out.println("Entering gameloop...");
+        //System.out.println("Entering gameloop...");
         gameLoop();
     }
 
 
     public void gameLoop(){
-        level.getGame().getChildren().add(aimLine);
-
         if(player1Turn){
-            playerTurn(level.getPlayer1());
-            drawAimline(robot.getMouseX(), robot.getMouseY(), level.getPlayer1().getPosX(),level.getPlayer1().getPosY());
+            playerTurn(level.getPlayer1(), console);
         }else{
-            playerTurn(level.getPlayer2());
-            drawAimline(robot.getMouseX(), robot.getMouseY(), level.getPlayer2().getPosX(),level.getPlayer2().getPosY());
+            playerTurn(level.getPlayer2(), console);
         }
         player1Turn = !player1Turn;
-
-
     }
 
-    public void playerTurn(Player player){
-        aimHandler  = event -> drawAimline(event, player.getPosX(), player.getPosY());
-        firePressed = event -> startFireIncrease(event, player);
-        fireReleased = event -> fireCastable(event, player);
+    public void playerTurn(Player player, Scanner console) {
 
-        level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
-        level.getGame().addEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+        System.out.println(player.getName()+"'s turn!");
+        System.out.print("Please enter an angle to shoot: ");
+        int angle = inputInt(console, 0, 90);
+        System.out.print("\nPlease enter a velocity: ");
+        int v = inputInt(console, 1, 25);
 
-
+        fireCastable(player, angle, v);
     }
 
-    public void drawAimline(MouseEvent event, double playerX, double playerY){
-        double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
-        if(playerX > event.getX()) angle += Math.PI;
-        aimLine.setStartX(playerX + aimlineMinRadius * Math.cos(angle));
-        aimLine.setStartY(playerY - aimlineMinRadius * Math.sin(angle));
-        aimLine.setEndX(playerX + Math.cos(angle) * aimlineMaxRadius);
-        aimLine.setEndY(playerY - Math.sin(angle) * aimlineMaxRadius);
-
-    }
-    public void drawAimline(double mouseX, double mouseY, double playerX, double playerY){
-        double angle = Math.atan((playerY - mouseY) / (mouseX - playerX));
-        if(playerX > mouseX) angle += Math.PI;
-        aimLine.setStartX(playerX + aimlineMinRadius * Math.cos(angle));
-        aimLine.setStartY(playerY - aimlineMinRadius * Math.sin(angle));
-        aimLine.setEndX(playerX + Math.cos(angle) * aimlineMaxRadius);
-        aimLine.setEndY(playerY - Math.sin(angle) * aimlineMaxRadius);
-    }
-
-    public void startFireIncrease(MouseEvent event, Player player){
-        // Triggers when the mouse is pressed:
-        // Begins drawing a growing line towards the mouse
-        player.setSprite(player.gorilla2);
-        fireLineTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0 / 24), (e) -> {drawFireLine(event, player.getPosX(), player.getPosY());}));
-        level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
-        fireLineTimeline.setCycleCount(Timeline.INDEFINITE);
-        fireLineTimeline.play();
-    }
-
-    public void drawFireLine(MouseEvent event, double playerX, double playerY){
-        double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
-        if(playerX > event.getX()) angle += Math.PI;
-
-        if(!firing){
-            aimLine.setStartX(playerX + aimlineMinRadius * Math.cos(angle));
-            aimLine.setStartY(playerY - aimlineMinRadius * Math.sin(angle));
-            aimLine.setEndX(playerX + aimlineMinRadius * Math.cos(angle));
-            aimLine.setEndY(playerY - aimlineMinRadius * Math.sin(angle));
-            firing = true;
-            // When firing, listen for when the mouse is released
-            level.getGame().addEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
+    public static int inputInt(Scanner console, int min, int max) {
+        int n;
+        while (true) {
+            if (console.hasNextInt()) {
+                n = console.nextInt();
+                if (n >= min && n <= max){
+                    break;
+                } else {
+                    System.out.print("Please enter an integer between "+min+" and "+max+": ");
+                }
+            } else {
+                System.out.print("Please enter an integer between "+min+" and "+max+": ");
+                console.next();
+            }
         }
-
-        if(Math.abs(aimLine.getEndX() - aimLine.getStartX()) < Math.abs(Math.cos(angle) * 99)){
-            aimLine.setEndX(aimLine.getEndX() +  Math.cos(angle) * 3);
-            aimLine.setEndY(aimLine.getEndY() -  Math.sin(angle) * 3);
-        }else{
-            fireLineTimeline.stop();
-        }
+        return n;
     }
 
-    public void fireCastable(MouseEvent event, Player player){
-        // Triggers when the mouse is released:
-        // Pauses the players' interaction and animates the throw of the castable.
-        player.setSprite(player.gorilla1);
-        fireLineTimeline.stop();
-        level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED,firePressed);
-        level.getGame().removeEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
+    public void fireCastable(Player player, double angle, int v) {
+        Sound.play("/Sounds/Throw.mp3");
 
         Castable selectedCastable = player.getSelectedCastable();
         thrownCastableTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/24),(e) -> {animateCastable(selectedCastable);}));
         thrownCastableTimeline.setCycleCount(Timeline.INDEFINITE);
 
-        selectedCastable.setVelocityX((aimLine.getEndX() - aimLine.getStartX()) * 10.0 / 24);
-        selectedCastable.setVelocityY((aimLine.getStartY() - aimLine.getEndY()) * 10.0 / 24);
-        selectedCastable.setX(aimLine.getStartX());
-        selectedCastable.setY(aimLine.getStartY());
+        if (player1Turn) {
+            angle = angle/180*Math.PI;
+        } else {
+            angle = (180-angle)/180*Math.PI;
+        }
 
-        level.getGame().getChildren().add(selectedCastable.getSpriteView());
-        //level.getGame().getChildren().add(selectedCastable.getCircle());
-        level.getGame().getChildren().remove(aimLine);
-        firing = false;
-        Sound.play("/Sounds/Throw.mp3");
+        selectedCastable.setVelocityX(Math.cos(angle)*v);
+        selectedCastable.setVelocityY(Math.sin(angle)*v);
+        selectedCastable.setX(player.getPosX() + (player1Turn ? 15 : -15));//+ Math.cos(angle)*aimlineMinRadius);
+        selectedCastable.setY(player.getPosY() - 15);//- Math.sin(angle)*aimlineMinRadius);
+
+        //level.getGame().getChildren().add(selectedCastable.getSpriteView());
+        level.getGame().getChildren().add(selectedCastable.getCircle());
+
         thrownCastableTimeline.play();
     }
+
 
     public void animateCastable(Castable castable){
         boolean stop = false;
@@ -189,51 +140,35 @@ public class GameObject {
         }
 
         stop = stop || GUIHelpers.isOutOfGame(castable.getCircle().getBoundsInLocal(), screenX, screenY);
-        stop = stop || level.getPlayer1().collision(castable.getCircle().getBoundsInLocal());
-        stop = stop || level.getPlayer2().collision(castable.getCircle().getBoundsInLocal());
+        //stop = stop || level.getPlayer1().collision(castable.getCircle().getBoundsInLocal());
+        //stop = stop || level.getPlayer2().collision(castable.getCircle().getBoundsInLocal());
         if(stop){
-            level.getGame().getChildren().remove(castable.getSpriteView());
-            //level.getGame().getChildren().remove(castable.getCircle());
+            //level.getGame().getChildren().remove(castable.getSpriteView());
+            level.getGame().getChildren().remove(castable.getCircle());
+
+            double dx1 = level.getPlayer1().getPosX() - castable.getX();
+            double dx2 = level.getPlayer2().getPosX() - castable.getX();
+            double dy1 = level.getPlayer1().getPosY() - castable.getY();
+            double dy2 = level.getPlayer2().getPosY() - castable.getY();
+            //System.out.printf("D p1: %f, %f, %f.   D p2: %f, %f, %f\n",dx1,dy1,Math.sqrt(dx1*dx1 + dy1*dy1),dx2,dy2,Math.sqrt(dx2*dx2 + dy2*dy2));
+            if (Math.sqrt(dx1*dx1 + dy1*dy1) <= screenX/50) {
+                player2_points++;
+                System.out.printf(level.getPlayer2().getName() + " hit! You now have %d points.\n", player2_points);
+            }
+            if (Math.sqrt(dx2*dx2 + dy2*dy2) <= screenX/50) {
+                player1_points++;
+                System.out.printf(level.getPlayer1().getName() + " hit! You now have %d points.\n", player1_points);
+            }
+
+
             thrownCastableTimeline.stop();
-            level.getGame().removeEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
-            aimLine.setStartX(0);
-            aimLine.setStartY(0);
-            aimLine.setEndX(0);
-            aimLine.setEndY(0);
+            //level.getGame().removeEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
+
             level.getGame().getChildren().remove(outOfScreenTrackArrow);
             outOfScreen = false;
             gameLoop();
         }
 
-    }
-
-    public void drawJumpLine(MouseEvent event, Player player){
-        double jumpSpeed = 38.36;
-        double length = Math.abs(player.getPosX() - event.getX());
-        double sign = player.getPosX() < event.getX() ? 1 : -1;
-
-
-        jumpLine.setStartX(player.getPosX());
-        jumpLine.setStartY(player.getPosY());
-        jumpLine.setEndX(player.getPosX() + sign * length);
-        jumpLine.setEndY(player.getPosY());
-        jumpLine.setControlX(player.getPosX() + sign * 1/2 * length);
-        jumpLine.setControlY(1);
-
-        StaticEntity intercept = null;
-        for(StaticEntity levelObj : getLevel().getStatics()){
-            if(intercept == null && levelObj.collision(jumpLine.getBoundsInLocal())){
-                intercept = levelObj;
-            }else if(intercept != null && levelObj.collision(jumpLine.getBoundsInLocal())){
-                if(intercept.getX() > levelObj.getX()){
-                    intercept = levelObj;
-                }
-            }
-        }
-    }
-
-    public MenuController getMenuController() {
-        return menuController;
     }
 
     public Level getLevel(){
@@ -244,9 +179,5 @@ public class GameObject {
 
     public void setPlayer1Turn(boolean player1Turn) {
         this.player1Turn = player1Turn;
-    }
-
-    public void setGameRunning(boolean gameRunning) {
-        this.gameRunning = gameRunning;
     }
 }

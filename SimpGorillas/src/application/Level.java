@@ -17,23 +17,14 @@ public class Level {
     private Random r = new Random();
     private int numOfBuildings = 10;
 
-    Level(double x, double y, boolean flat) throws Exception {
+    Level(double x, double y) throws Exception {
         screenX = x;
         screenY = y;
         game = new AnchorPane();
         gameScene = new Scene(game, screenX, screenY);
 
-        if (!flat) {
-            buildingWidth = x / numOfBuildings;
-            buildingStoryHeight = 0.19 * screenY;
-            for (int i = 0; i < numOfBuildings; i++) {
-                int stories = 2 + r.nextInt(3);
-                statics.add(new Building(buildingWidth * i, screenY - buildingStoryHeight * stories, buildingWidth, buildingStoryHeight, stories));
-                game.getChildren().addAll(statics.get(i).getSprites());
-            }
-        }
-        player1 = new Player(10,"Player 1",0,y);
-        player2 = new Player(10,"Player 2",x-1,y);
+        player1 = new Player(10,"Player 1",0,y,20);
+        player2 = new Player(10,"Player 2",x-1,y,-20);
         game.getChildren().add(player1.getNameLabel());
         game.getChildren().add(player2.getNameLabel());
         game.getChildren().add(player1.getSpriteView());

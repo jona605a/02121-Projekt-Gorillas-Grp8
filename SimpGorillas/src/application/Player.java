@@ -24,11 +24,11 @@ public class Player {
     public Image gorilla2 = new Image("/Images/Gorilla2.png", 58, 58, true, false);
     public Image gorilla3 = new Image("/Images/Gorilla3.png", 58, 58, true, false);
 
-    Player(int hp, String name, double x, double y){
+    Player(int hp, String name, double x, double y, double spriteoffsetX){
         this.hitPoints = hp;
         this.name = name;
         posX = x;
-        posY = y - gorilla1.getHeight()/2;
+        posY = y;
         velocityX = 0;
         velocityY = 0;
         castables.add(new Banana(x, y));
@@ -37,11 +37,6 @@ public class Player {
         hitBox.setCenterY(y);
         selectedCastable = new Banana(posX, posY);
 
-        int noOfCoconuts = 10;
-        // Adding coconuts as ammo
-        for(int i = 0; i < noOfCoconuts; i++) {
-        	castables.add(new Coconut(x, y));
-        }
 
         // Display player name
         nameLabel = new Label();
@@ -54,7 +49,7 @@ public class Player {
         // Set player sprite
         spriteView = new ImageView();
         spriteView.setPreserveRatio(true);
-        setSprite(gorilla1);
+        setSprite(gorilla1, spriteoffsetX);
 
     }
 
@@ -66,15 +61,11 @@ public class Player {
         return hitBox.intersects(localBounds);
     }
 
-    public void setSprite(Image image) {
+    public void setSprite(Image image, double spriteoffsetX) {
         spriteView.setImage(image);
-        spriteView.setX(posX - image.getWidth()/2);
-        spriteView.setY(posY - image.getHeight()/2);
+        spriteView.setX(posX + spriteoffsetX - image.getWidth()/2);
+        spriteView.setY(posY - gorilla1.getHeight()/2 - image.getHeight()/2);
         //System.out.println(image.getHeight());
-    }
-
-    public Circle getHitBox() {
-        return hitBox;
     }
 
     public Label getNameLabel() {
@@ -93,18 +84,6 @@ public class Player {
         return posY;
     }
 
-    public double getVelocityX() {
-        return velocityX;
-    }
-
-    public double getVelocityY() {
-        return velocityY;
-    }
-
-    public int getHitPoints() {
-        return hitPoints;
-    }
-
     public Castable getSelectedCastable() {
         return selectedCastable;
     }
@@ -118,34 +97,4 @@ public class Player {
         nameLabel.setText(name);
     }
 
-    public void setVelocityX(double velocityX) {
-        this.velocityX = velocityX;
-    }
-
-    public void setVelocityY(double velocityY) {
-        this.velocityY = velocityY;
-    }
-
-    public void addCastable(Castable castable) {
-    	this.castables.add(castable);
-    }
-    
-    public void addHitPoints(int hp) {
-    	this.hitPoints += hp;
-    }
-
-    public void switchCastable() {
-    	if(castables.size() > 1) {
-    		if(selectedCastable.getWeight() == castables.get(0).getWeight()) {
-    			selectedCastable = new Coconut(posX, posY);
-    		}
-    		else {
-    			selectedCastable = new Banana(posX, posY);
-    		}
-    	}
-    }
-    
-    public void useCoconut() {
-    	castables.remove(1);
-    }
 }

@@ -14,7 +14,7 @@ public class Main extends Application {
         int n = sc.nextInt();
         System.out.println("Please enter the screen height");
         int m = sc.nextInt();
-        GameObject gameObject = new GameObject(stage, (double) n, (double) m);
+        GameObject gameObject = new GameObject(stage, n, m);
         gameObject.start_game();
 
 
