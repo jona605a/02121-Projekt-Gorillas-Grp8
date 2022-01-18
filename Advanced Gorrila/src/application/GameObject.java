@@ -2,7 +2,6 @@ package application;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -29,7 +28,7 @@ public class GameObject {
     Rectangle2D screenBounds = Screen.getPrimary().getBounds();
     private double screenX = screenBounds.getMaxX(), screenY = screenBounds.getMaxY();
     private double gravity = -9.81;
-    private Level level = new Level(screenX, screenY);
+    private Level level = new Level(screenX, screenY, false);
     Line aimLine = new Line(0,0,0,0);
     QuadCurve jumpLine = new QuadCurve();
     private boolean firing;
@@ -90,7 +89,7 @@ public class GameObject {
         aimHandler  = event -> drawAimline(event, player.getPosX(), player.getPosY());
         firePressed = event -> startFireIncrease(event, player);
         fireReleased = event -> fireCastable(event, player);
-        toJumpMode = event -> changeToJump(event, player);
+        toJumpMode = event -> toggleJumpMpde(event, player);
         drawJump = event -> drawJumpLine(event, player);
 
 
@@ -218,8 +217,7 @@ public class GameObject {
 
     }
 
-    public void changeToJump(KeyEvent event, Player player){
-        System.out.println(event.getCode());
+    public void toggleJumpMpde(KeyEvent event, Player player){
         if(event.getCode() == KeyCode.J){
             level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
             level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
@@ -235,10 +233,10 @@ public class GameObject {
         double jumpSpeed = 38.36 * 1.5;
         double x = player.getPosX();
         double y = player.getPosY();
-        double angle = GUIHelpers.getAngleOfLine(x, y, event.getX(), event.getY());
-        double t = jumpSpeed * Math.sin(angle) / ((-1) * gravity / 2);
+        double xlength = Math.abs(event.getX() - x) > jumpSpeed * Math.cos(Math.PI/4) ? jumpSpeed * Math.cos(Math.PI/4) : event.getX() - x;
+        double angle = Math.asin(gravity * xlength / Math.pow(jumpSpeed, 2)) / 2;
+        double t = jumpSpeed * Math.sin(angle) / (-gravity) * 2;
         double ylength = jumpSpeed * Math.sin(angle) * t / 2  + gravity / 2 * Math.pow(t / 2, 2);
-        double xlength = jumpSpeed * Math.cos(angle) * t;
         double controlX = (x * 0.5 + 0.25 * xlength) * 2;
         double controlY = y - ylength * 2;
         System.out.println(angle +  " " + xlength + " " + ylength);
