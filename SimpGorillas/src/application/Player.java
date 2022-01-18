@@ -24,11 +24,11 @@ public class Player {
     public Image gorilla2 = new Image("/Images/Gorilla2.png", 58, 58, true, false);
     public Image gorilla3 = new Image("/Images/Gorilla3.png", 58, 58, true, false);
 
-    Player(int hp, String name, double x, double y){
+    Player(int hp, String name, double x, double y, double spriteoffsetX){
         this.hitPoints = hp;
         this.name = name;
         posX = x;
-        posY = y - gorilla1.getHeight()/2;
+        posY = y;
         velocityX = 0;
         velocityY = 0;
         castables.add(new Banana(x, y));
@@ -54,7 +54,7 @@ public class Player {
         // Set player sprite
         spriteView = new ImageView();
         spriteView.setPreserveRatio(true);
-        setSprite(gorilla1);
+        setSprite(gorilla1, spriteoffsetX);
 
     }
 
@@ -66,10 +66,10 @@ public class Player {
         return hitBox.intersects(localBounds);
     }
 
-    public void setSprite(Image image) {
+    public void setSprite(Image image, double spriteoffsetX) {
         spriteView.setImage(image);
-        spriteView.setX(posX - image.getWidth()/2);
-        spriteView.setY(posY - image.getHeight()/2);
+        spriteView.setX(posX + spriteoffsetX - image.getWidth()/2);
+        spriteView.setY(posY - gorilla1.getHeight()/2 - image.getHeight()/2);
         //System.out.println(image.getHeight());
     }
 

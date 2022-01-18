@@ -32,8 +32,8 @@ public class Level {
                 game.getChildren().addAll(statics.get(i).getSprites());
             }
         }
-        player1 = new Player(10,"Player 1",0,y);
-        player2 = new Player(10,"Player 2",x-1,y);
+        player1 = new Player(10,"Player 1",0,y,20);
+        player2 = new Player(10,"Player 2",x-1,y,-20);
         game.getChildren().add(player1.getNameLabel());
         game.getChildren().add(player2.getNameLabel());
         game.getChildren().add(player1.getSpriteView());
