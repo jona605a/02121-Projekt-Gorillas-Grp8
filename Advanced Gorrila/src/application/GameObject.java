@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.QuadCurve;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -24,7 +25,9 @@ public class GameObject {
     private double gravity = -9.81;
     private Level level = new Level(screenX, screenY);
     Line aimLine = new Line(0,0,0,0);
+    QuadCurve jumpLine = new QuadCurve();
     private boolean firing;
+    private boolean jumpMode;
     Timeline fireLineTimeline;
     Timeline thrownCastableTimeline;
     private boolean player1Turn;
@@ -44,6 +47,7 @@ public class GameObject {
         this.mainStage = mainStage;
         player1Turn = true;
         gameRunning = false;
+        jumpMode = false;
         outOfScreenTrackArrow.setFill(Color.YELLOW);
         outOfScreenTrackArrow.setStroke(Color.BLACK);
 
@@ -196,6 +200,31 @@ public class GameObject {
             gameLoop();
         }
 
+    }
+
+    public void drawJumpLine(MouseEvent event, Player player){
+        double jumpSpeed = 38.36;
+        double length = Math.abs(player.getPosX() - event.getX());
+        double sign = player.getPosX() < event.getX() ? 1 : -1;
+
+
+        jumpLine.setStartX(player.getPosX());
+        jumpLine.setStartY(player.getPosY());
+        jumpLine.setEndX(player.getPosX() + sign * length);
+        jumpLine.setEndY(player.getPosY());
+        jumpLine.setControlX(player.getPosX() + sign * 1/2 * length);
+        jumpLine.setControlY(1);
+
+        StaticEntity intercept = null;
+        for(StaticEntity levelObj : getLevel().getStatics()){
+            if(intercept == null && levelObj.collision(jumpLine.getBoundsInLocal())){
+                intercept = levelObj;
+            }else if(intercept != null && levelObj.collision(jumpLine.getBoundsInLocal())){
+                if(intercept.getX() > levelObj.getX()){
+                    intercept = levelObj;
+                }
+            }
+        }
     }
 
     public MenuController getMenuController() {

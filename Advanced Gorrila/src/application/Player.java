@@ -14,6 +14,7 @@ public class Player {
     private int hitPoints;
     private String name;
     private double posX, posY;
+    private double velocityX, velocityY;
     private ArrayList<Castable> castables = new ArrayList<Castable>();
     private Circle hitBox = new Circle();
     private Castable selectedCastable;
@@ -28,11 +29,14 @@ public class Player {
         this.name = name;
         posX = x;
         posY = y - gorilla1.getHeight()/2;
+        velocityX = 0;
+        velocityY = 0;
         castables.add(new Banana(x, y));
         hitBox.setRadius(10);
         hitBox.setCenterX(x);
         hitBox.setCenterY(y);
         selectedCastable = new Banana(posX, posY);
+
         int noOfCoconuts = 10;
         // Adding coconuts as ammo
         for(int i = 0; i < noOfCoconuts; i++) {
@@ -89,6 +93,14 @@ public class Player {
         return posY;
     }
 
+    public double getVelocityX() {
+        return velocityX;
+    }
+
+    public double getVelocityY() {
+        return velocityY;
+    }
+
     public int getHitPoints() {
         return hitPoints;
     }
@@ -105,7 +117,15 @@ public class Player {
         this.name = name;
         nameLabel.setText(name);
     }
-    
+
+    public void setVelocityX(double velocityX) {
+        this.velocityX = velocityX;
+    }
+
+    public void setVelocityY(double velocityY) {
+        this.velocityY = velocityY;
+    }
+
     public void addCastable(Castable castable) {
     	this.castables.add(castable);
     }
