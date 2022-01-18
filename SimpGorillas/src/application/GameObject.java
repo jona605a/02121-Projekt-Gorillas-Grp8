@@ -19,29 +19,15 @@ import java.util.Scanner;
 
 public class GameObject {
 
-
-    private MenuController menuController = new MenuController(this);
     private Stage mainStage;
     Rectangle2D screenBounds = Screen.getPrimary().getBounds();
     private double screenX = screenBounds.getMaxX(), screenY = screenBounds.getMaxY();
     private double gravity = -9.81;
     private Level level;
-    Line aimLine = new Line(0,0,0,0);
-    QuadCurve jumpLine = new QuadCurve();
-    private boolean firing;
-    private boolean jumpMode;
-    Timeline fireLineTimeline;
     Timeline thrownCastableTimeline;
     private boolean player1Turn;
-    private boolean gameRunning;
-    EventHandler<MouseEvent> aimHandler;
-    EventHandler<MouseEvent> firePressed;
-    EventHandler<MouseEvent> fireReleased;
-    Robot robot = new Robot();
     Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
     private boolean outOfScreen = false;
-    private int aimlineMinRadius = 40;
-    private int aimlineMaxRadius = 100;
     int player1_points;
     int player2_points;
     Scanner console = new Scanner(System.in);
@@ -54,18 +40,15 @@ public class GameObject {
         mainStage.show();
 
         player1Turn = true;
-        gameRunning = false;
-        jumpMode = false;
         outOfScreenTrackArrow.setFill(Color.YELLOW);
         outOfScreenTrackArrow.setStroke(Color.BLACK);
-        level = new Level(width, height, true);
+        level = new Level(width, height);
         screenX = width;
         screenY = height;
     }
 
     public void start_game(){
         mainStage.setScene(level.getGameScene());
-        gameRunning = true;
         //System.out.println("Entering gameloop...");
         gameLoop();
     }
@@ -86,13 +69,12 @@ public class GameObject {
         System.out.print("Please enter an angle to shoot: ");
         int angle = inputInt(console, 0, 90);
         System.out.print("\nPlease enter a velocity: ");
-        int v = inputInt(console, 1, 20);
+        int v = inputInt(console, 1, 25);
 
         fireCastable(player, angle, v);
     }
 
     public static int inputInt(Scanner console, int min, int max) {
-        // Get integer between min and max (inclusive).
         int n;
         while (true) {
             if (console.hasNextInt()) {
@@ -189,10 +171,6 @@ public class GameObject {
 
     }
 
-    public MenuController getMenuController() {
-        return menuController;
-    }
-
     public Level getLevel(){
         return level;
     }
@@ -201,9 +179,5 @@ public class GameObject {
 
     public void setPlayer1Turn(boolean player1Turn) {
         this.player1Turn = player1Turn;
-    }
-
-    public void setGameRunning(boolean gameRunning) {
-        this.gameRunning = gameRunning;
     }
 }
