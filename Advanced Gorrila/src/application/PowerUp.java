@@ -1,12 +1,12 @@
 package application;
 
-import java.util.Random;
-
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
+
+import java.util.Random;
 
 public class PowerUp extends StaticEntity {
 	
