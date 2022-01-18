@@ -3,6 +3,8 @@ package application;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
@@ -14,6 +16,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.event.EventHandler;
 
+import java.security.Key;
 import java.util.ArrayList;
 
 
@@ -34,9 +37,12 @@ public class GameObject {
     Timeline thrownCastableTimeline;
     private boolean player1Turn;
     private boolean gameRunning;
-    EventHandler<MouseEvent> aimHandler;
-    EventHandler<MouseEvent> firePressed;
-    EventHandler<MouseEvent> fireReleased;
+    private EventHandler<MouseEvent> aimHandler;
+    private EventHandler<MouseEvent> firePressed;
+    private EventHandler<MouseEvent> fireReleased;
+    private EventHandler<KeyEvent> toJumpMode;
+    private EventHandler<MouseEvent> drawJump;
+    private EventHandler<MouseEvent> jump;
     Robot robot = new Robot();
     Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
     private boolean outOfScreen = false;
@@ -52,6 +58,8 @@ public class GameObject {
         jumpMode = false;
         outOfScreenTrackArrow.setFill(Color.YELLOW);
         outOfScreenTrackArrow.setStroke(Color.BLACK);
+        jumpLine.setFill(Color.TRANSPARENT);
+        jumpLine.setStroke(Color.BLACK);
 
     }
 
@@ -81,9 +89,14 @@ public class GameObject {
         aimHandler  = event -> drawAimline(event, player.getPosX(), player.getPosY());
         firePressed = event -> startFireIncrease(event, player);
         fireReleased = event -> fireCastable(event, player);
+        toJumpMode = event -> changeToJump(event, player);
+        drawJump = event -> drawJumpLine(event, player);
+
 
         level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
         level.getGame().addEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+        //level.getGameScene().addEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+
 
 
     }
@@ -204,18 +217,38 @@ public class GameObject {
 
     }
 
+    public void changeToJump(KeyEvent event, Player player){
+        System.out.println(event.getCode());
+        if(event.getCode() == KeyCode.J){
+            level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
+            level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+            level.getGameScene().removeEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+            level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, drawJump);
+            level.getGame().getChildren().add(jumpLine);
+            level.getGame().getChildren().remove(aimLine);
+
+        }
+    }
+
     public void drawJumpLine(MouseEvent event, Player player){
-        double jumpSpeed = 38.36;
-        double length = Math.abs(player.getPosX() - event.getX());
-        double sign = player.getPosX() < event.getX() ? 1 : -1;
+        double jumpSpeed = 38.36 * 1.5;
+        double x = player.getPosX();
+        double y = player.getPosY();
+        double angle = GUIHelpers.getAngleOfLine(x, y, event.getX(), event.getY());
+        double t = jumpSpeed * Math.sin(angle) / ((-1) * gravity / 2);
+        double ylength = jumpSpeed * Math.sin(angle) * t / 2  + gravity / 2 * Math.pow(t / 2, 2);
+        double xlength = jumpSpeed * Math.cos(angle) * t;
+        double controlX = (x * 0.5 + 0.25 * xlength) * 2;
+        double controlY = y - ylength * 2;
+        System.out.println(angle +  " " + xlength + " " + ylength);
 
 
-        jumpLine.setStartX(player.getPosX());
-        jumpLine.setStartY(player.getPosY());
-        jumpLine.setEndX(player.getPosX() + sign * length);
-        jumpLine.setEndY(player.getPosY());
-        jumpLine.setControlX(player.getPosX() + sign * 1/2 * length);
-        jumpLine.setControlY(1);
+        jumpLine.setStartX(x);
+        jumpLine.setStartY(y);
+        jumpLine.setEndX(x + xlength);
+        jumpLine.setEndY(y);
+        jumpLine.setControlX(controlX);
+        jumpLine.setControlY(controlY);
 
         StaticEntity intercept = null;
         for(StaticEntity levelObj : getLevel().getStatics()){

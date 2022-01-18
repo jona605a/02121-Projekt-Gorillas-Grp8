@@ -44,4 +44,10 @@ public class GUIHelpers {
         arrow.getPoints().addAll(points);
         return arrow;
     }
+
+    public static double getAngleOfLine(double x1, double y1, double x2, double y2){
+        double angle = Math.atan((y1 - y2) / (x2 - x1));
+
+        return x1 > x2 ? angle + Math.PI : angle;
+    }
 }
