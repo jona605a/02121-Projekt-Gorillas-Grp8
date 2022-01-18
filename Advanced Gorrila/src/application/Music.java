@@ -19,6 +19,7 @@ public class Music {
         for (int i = 0; i < songs.length; i++) {
             musicList[i] = new Sound(songs[i]);
         }
+        this.changeVolume(0.2);
         this.currentSongIndex = startSongIndex;
         this.playSong();
     }

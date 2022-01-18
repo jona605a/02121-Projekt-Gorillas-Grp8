@@ -24,23 +24,23 @@ public class Sound {
     }
 
     public void setVolume(double volume) {
-        mediaPlayer.setVolume(volume);
+        this.mediaPlayer.setVolume(volume);
     }
 
     public void stop() {
-        mediaPlayer.stop();
+        this.mediaPlayer.stop();
     }
 
     public void pause() {
-        mediaPlayer.pause();
+        this.mediaPlayer.pause();
     }
 
     public boolean isPlaying() {
-        return mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING;
+        return this.mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING;
     }
 
     public String getPath() {
-        return mediaPlayer.getMedia().getSource();
+        return this.mediaPlayer.getMedia().getSource();
     }
 
     public MediaPlayer getMediaPlayer() {
