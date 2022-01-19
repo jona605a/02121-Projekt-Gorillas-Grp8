@@ -238,11 +238,6 @@ public class GameObject {
             outOfScreen = false;
             player1Turn = !player1Turn;
             fired = false;
-            try{
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             gameLoop();
         }
 
