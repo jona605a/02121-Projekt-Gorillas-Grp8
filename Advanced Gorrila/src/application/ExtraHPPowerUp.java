@@ -9,5 +9,6 @@ public class ExtraHPPowerUp extends  PowerUp{
         boolean player1Turn = gameObject.isPlayer1Turn();
         Player currentPlayer = player1Turn ? gameObject.getLevel().getPlayer1() : gameObject.getLevel().getPlayer2();
         currentPlayer.addHitPoints(20);
+        super.delete(gameObject);
     }
 }

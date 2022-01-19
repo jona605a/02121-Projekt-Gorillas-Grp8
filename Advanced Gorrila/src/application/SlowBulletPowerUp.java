@@ -11,5 +11,6 @@ public class SlowBulletPowerUp extends  PowerUp{
         Castable selectedCastable = player1Turn ? gameObject.getLevel().getPlayer1().getSelectedCastable() : gameObject.getLevel().getPlayer2().getSelectedCastable();
         selectedCastable.setVelocityX(selectedCastable.getVelocityX() * 0.5);
         selectedCastable.setVelocityY(selectedCastable.getVelocityY() * 0.5);
+        super.delete(gameObject);
     }
 }

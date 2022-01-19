@@ -9,5 +9,6 @@ public class ExtraTurnPowerUp extends PowerUp{
     public void onCollision(GameObject gameObject) {
         boolean player1Turn = gameObject.isPlayer1Turn();
         gameObject.setPlayer1Turn(!player1Turn);
+        super.delete(gameObject);
     }
 }
