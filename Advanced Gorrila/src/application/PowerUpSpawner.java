@@ -1,14 +1,16 @@
 package application;
 
+import javafx.scene.shape.Circle;
+
 import java.util.ArrayList;
 import java.util.Random;
 
 public class PowerUpSpawner {
 
-    public static PowerUp[] spawnPowerUps(double xMin, double yMin, double width, double height, int amount, ArrayList<StaticEntity> statics) {
+    public static ArrayList<PowerUp> spawnPowerUps(double xMin, double yMin, double width, double height, int amount, ArrayList<StaticEntity> statics) {
         // spawns and returns a list of new powerups
         int r = 50;
-        PowerUp[] powerUps = new PowerUp[amount];
+        ArrayList<PowerUp> powerUps = new ArrayList<PowerUp>();
 
         while(amount-- > 0) {
             boolean valid;
@@ -20,20 +22,19 @@ public class PowerUpSpawner {
                 x = randomNumber(xMin, xMin + width);
                 y = randomNumber(yMin, yMin + height);
                 for (int i = 0; i < statics.size(); i++){
-                    if (statics.get(i).collision(x, y)) valid = false;
+                    if (statics.get(i).collision(new Circle(x, y, r).getLayoutBounds())) valid = false;
                 }
 
             } while (!valid);
             int powerUpType = randomNumber( 6);
 
             switch (powerUpType) {
-                case 0 -> powerUps[amount] = new FastBulletPowerUp(x, y, r);
-                case 1 -> powerUps[amount] = new SlowBulletPowerUp(x, y, r);
-                case 2 -> powerUps[amount] = new ExtraAmmoPowerUp(x, y, r);
-                //case 3 -> powerUps[amount] = new ExtraHPPowerUp(x, y, r); Missing sprite
-                case 4 -> powerUps[amount] = new PowerfulBulletPowerUp(x, y, r);
-                case 5 -> powerUps[amount] = new ExtraTurnPowerUp(x, y, r);
-                default -> System.out.println();
+                case 0 -> powerUps.add(new FastBulletPowerUp(x, y, r));
+                case 1 -> powerUps.add(new SlowBulletPowerUp(x, y, r));
+                case 2 -> powerUps.add(new ExtraAmmoPowerUp(x, y, r));
+                case 3 -> powerUps.add(new ExtraHPPowerUp(x, y, r)); //Missing sprite
+                case 4 -> powerUps.add(new PowerfulBulletPowerUp(x, y, r));
+                case 5 -> powerUps.add(new ExtraTurnPowerUp(x, y, r));
             }
         }
 
