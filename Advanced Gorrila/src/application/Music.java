@@ -26,6 +26,7 @@ public class Music {
 
     private void playSong() {
         playSong(this.currentSongIndex);
+        // Change to new song when current one is finished
         this.getCurrentSong().getMediaPlayer().setOnEndOfMedia( () -> {
             this.onSongFinished();
         });
@@ -66,7 +67,7 @@ public class Music {
 
     public void stopCurrentSong() {
         Sound song = this.getCurrentSong();
-        if (song != null) song.stop();
+        if (song.isPlaying()) song.stop();
     }
 
     private Sound getCurrentSong() {

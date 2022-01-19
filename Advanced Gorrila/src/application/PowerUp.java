@@ -6,21 +6,36 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 
+import java.util.ArrayList;
+
 public abstract class PowerUp extends StaticEntity {
 
     private Circle shape;
     private Image sprite;
     private ImageView spriteView;
-    private String type;
 
     public PowerUp(double x, double y, int r, String imagePath) {
+        this.x = x;
+        this.y = y;
         this.shape = new Circle(x, y, r);
         this.sprite = new Image(imagePath, r, r, true, false);
         this.spriteView = new ImageView(this.sprite);
+        this.spriteView.setX(x);
+        this.spriteView.setY(y);
+        this.spriteView.setFitHeight(r);
+        this.spriteView.setFitWidth(r);
 
     }
 
     public abstract void onCollision(GameObject gameObject);
+
+    public void delete(GameObject gameObject) {
+        // Removing the power up from the game
+        gameObject.getLevel().getGame().getChildren().remove(this.getSprite());
+        ArrayList<PowerUp> powerUps = gameObject.getLevel().getPowerUps();
+        powerUps.remove(this);
+        gameObject.getLevel().setPowerUps(powerUps);
+    }
 
     @Override
     public boolean collision(double x, double y) {
@@ -39,7 +54,7 @@ public abstract class PowerUp extends StaticEntity {
 
     @Override
     Node[] getSprites() {
-        return new Node[0];
+        return null;
     }
 
     @Override
