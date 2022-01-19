@@ -32,7 +32,7 @@ public class Player {
         velocityX = 0;
         velocityY = 0;
         castables.add(new Banana(x, y));
-        hitBox.setRadius(10);
+        hitBox.setRadius(gorilla1.getHeight()/2);
         hitBox.setCenterX(x);
         hitBox.setCenterY(y);
         selectedCastable = new Banana(posX, posY);
@@ -124,6 +124,18 @@ public class Player {
 
     public void setVelocityY(double velocityY) {
         this.velocityY = velocityY;
+    }
+
+    public void setPosX(double posX) {
+        this.posX = posX;
+        hitBox.setCenterX(posX);
+        spriteView.setX(posX - gorilla1.getWidth() / 2);
+    }
+
+    public void setPosY(double posY) {
+        this.posY = posY;
+        hitBox.setCenterY(posY);
+        spriteView.setY(posY - gorilla1.getHeight() / 2);
     }
 
     public void addCastable(Castable castable) {

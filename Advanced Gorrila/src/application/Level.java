@@ -1,7 +1,12 @@
 package application;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,6 +21,11 @@ public class Level {
     private double buildingWidth, buildingStoryHeight;
     private Random r = new Random();
     private int numOfBuildings = 10;
+    private Image backgroundImg;
+    private ImageView bg1;
+    private ImageView bg2;
+    private boolean bg2IsBack;
+    private Timeline backgroundTimeline;
 
     Level(double x, double y) throws Exception {
         screenX = x;
@@ -31,14 +41,47 @@ public class Level {
         }
         player1 = new Player(10,"Player 1",buildingWidth / 2, statics.get(0).getY());
         player2 = new Player(10,"Player 2",buildingWidth / 2 + buildingWidth * (numOfBuildings - 1), statics.get((numOfBuildings - 1)).getY());
+        backgroundImg = new Image("/Images/Sky.png", screenX, screenY, false, false);
+        bg1 = new ImageView(backgroundImg);
+        bg2 = new ImageView(backgroundImg);
+        backgroundTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/24), (e) -> {animateBackground();}));
+        backgroundTimeline.setCycleCount(-1);
+
         game.getChildren().add(player1.getNameLabel());
         game.getChildren().add(player2.getNameLabel());
         game.getChildren().add(player1.getSpriteView());
         game.getChildren().add(player2.getSpriteView());
+        game.getChildren().add(bg1);
+        game.getChildren().add(bg2);
+
+
+    }
+
+    public void animateBackground(){
+        bg1.setX(bg1.getX() + 1);
+        bg2.setX(bg2.getX() + 1);
+        if(bg2IsBack){
+            if(bg2.getX() == 0){
+                bg1.setX(-screenX);
+                bg2IsBack = false;
+            }
+        }else{
+            if(bg1.getX() == 0){
+                bg2.setX(-screenX);
+                bg2IsBack = true;
+            }
+        }
     }
 
     public void setupLevel(){
-
+        bg2IsBack = true;
+        bg1.toBack();
+        bg1.setX(0);
+        bg1.setY(0);
+        bg2.toBack();
+        bg2.setX(-screenX);
+        bg2.setY(0);
+        backgroundTimeline.play();
     }
     public Scene getGameScene() {
         return gameScene;

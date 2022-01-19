@@ -28,15 +28,18 @@ public class GameObject {
     Rectangle2D screenBounds = Screen.getPrimary().getBounds();
     private double screenX = screenBounds.getMaxX(), screenY = screenBounds.getMaxY();
     private double gravity = -9.81;
-    private Level level = new Level(screenX, screenY, false);
+    private Level level = new Level(screenX, screenY);
     Line aimLine = new Line(0,0,0,0);
     QuadCurve jumpLine = new QuadCurve();
     private boolean firing;
     private boolean jumpMode;
     Timeline fireLineTimeline;
     Timeline thrownCastableTimeline;
+    Timeline jumpTimeLine;
     private boolean player1Turn;
     private boolean gameRunning;
+    private boolean outOfScreen = false;
+    private boolean didJump = false;
     private EventHandler<MouseEvent> aimHandler;
     private EventHandler<MouseEvent> firePressed;
     private EventHandler<MouseEvent> fireReleased;
@@ -45,7 +48,6 @@ public class GameObject {
     private EventHandler<MouseEvent> jump;
     Robot robot = new Robot();
     Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
-    private boolean outOfScreen = false;
     private int aimlineMinRadius = 20;
     private int aimlineMaxRadius = 100;
 
@@ -91,6 +93,9 @@ public class GameObject {
         fireReleased = event -> fireCastable(event, player);
         toJumpMode = event -> toggleJumpMpde(event, player);
         drawJump = event -> drawJumpLine(event, player);
+        jump = event -> playerJump(event, player);
+        jumpMode = false;
+        didJump =  false;
 
 
         level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
@@ -102,12 +107,7 @@ public class GameObject {
     }
 
     public void drawAimline(MouseEvent event, double playerX, double playerY){
-        double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
-        if(playerX > event.getX()) angle += Math.PI;
-        aimLine.setStartX(playerX + aimlineMinRadius * Math.cos(angle));
-        aimLine.setStartY(playerY - aimlineMinRadius * Math.sin(angle));
-        aimLine.setEndX(playerX + Math.cos(angle) * aimlineMaxRadius);
-        aimLine.setEndY(playerY - Math.sin(angle) * aimlineMaxRadius);
+        drawAimline(event.getX(), event.getY(), playerX, playerY);
 
     }
     public void drawAimline(double mouseX, double mouseY, double playerX, double playerY){
@@ -202,10 +202,18 @@ public class GameObject {
         stop = stop || level.getPlayer1().collision(castable.getCircle().getBoundsInLocal());
         stop = stop || level.getPlayer2().collision(castable.getCircle().getBoundsInLocal());
         if(stop){
+
+            // end of turn
+            // remove all listeners
             level.getGame().getChildren().remove(castable.getSpriteView());
-            //level.getGame().getChildren().remove(castable.getCircle());
             thrownCastableTimeline.stop();
             level.getGame().removeEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
+            if(!didJump){
+                level.getGameScene().removeEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+            }
+
+
+
             aimLine.setStartX(0);
             aimLine.setStartY(0);
             aimLine.setEndX(0);
@@ -219,27 +227,47 @@ public class GameObject {
 
     public void toggleJumpMpde(KeyEvent event, Player player){
         if(event.getCode() == KeyCode.J){
-            level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
-            level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
-            level.getGameScene().removeEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
-            level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, drawJump);
-            level.getGame().getChildren().add(jumpLine);
-            level.getGame().getChildren().remove(aimLine);
+            if(!jumpMode){
+                level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
+                level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+                level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, drawJump);
+                level.getGame().addEventFilter(MouseEvent.MOUSE_PRESSED, jump);
+                level.getGame().getChildren().add(jumpLine);
+                level.getGame().getChildren().remove(aimLine);
+                drawJumpLine(robot.getMouseX(), player);
+                jumpMode = true;
+            }else if(!didJump){
+                level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
+                level.getGame().addEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+                level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, drawJump);
+                level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED, jump);
+                level.getGame().getChildren().remove(jumpLine);
+                level.getGame().getChildren().add(aimLine);
+                jumpMode = false;
+            }
 
         }
     }
 
+
     public void drawJumpLine(MouseEvent event, Player player){
+        drawJumpLine(event.getX(), player);
+    }
+
+    //Overload for single call
+    public void drawJumpLine(double mouseX, Player player){
         double jumpSpeed = 38.36 * 1.5;
         double x = player.getPosX();
-        double y = player.getPosY();
-        double xlength = Math.abs(event.getX() - x) > jumpSpeed * Math.cos(Math.PI/4) ? jumpSpeed * Math.cos(Math.PI/4) : event.getX() - x;
-        double angle = Math.asin(gravity * xlength / Math.pow(jumpSpeed, 2)) / 2;
+        double y = player.getPosY() + player.getHitBox().getRadius();
+        double maxX = jumpSpeed * Math.cos(Math.PI/4) * jumpSpeed * Math.sin(Math.PI/4) / (-gravity) * 2;
+        double xlength = Math.abs(mouseX - x) > maxX ? maxX : mouseX - x;
+        double angle = Math.PI/2 - Math.asin(-gravity * xlength / Math.pow(jumpSpeed, 2)) / 2;
         double t = jumpSpeed * Math.sin(angle) / (-gravity) * 2;
         double ylength = jumpSpeed * Math.sin(angle) * t / 2  + gravity / 2 * Math.pow(t / 2, 2);
         double controlX = (x * 0.5 + 0.25 * xlength) * 2;
         double controlY = y - ylength * 2;
-        System.out.println(angle +  " " + xlength + " " + ylength);
+
+        //System.out.println(angle +  " " + xlength + " " + ylength);
 
 
         jumpLine.setStartX(x);
@@ -248,6 +276,9 @@ public class GameObject {
         jumpLine.setEndY(y);
         jumpLine.setControlX(controlX);
         jumpLine.setControlY(controlY);
+        player.setVelocityX(jumpSpeed * Math.cos(angle));
+        player.setVelocityY(jumpSpeed * Math.sin(angle));
+
 
         StaticEntity intercept = null;
         for(StaticEntity levelObj : getLevel().getStatics()){
@@ -259,6 +290,45 @@ public class GameObject {
                 }
             }
         }
+    }
+
+    public void playerJump(MouseEvent event, Player player){
+        System.out.println("HEJ");
+        jumpTimeLine = new Timeline(new KeyFrame(Duration.millis(1000.0/24),(e) -> animateJump(player)));
+        level.getGame().removeEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+        level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, drawJump);
+        level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED, jump);
+        level.getGame().getChildren().remove(jumpLine);
+        jumpTimeLine.setCycleCount(Timeline.INDEFINITE);
+        jumpTimeLine.play();
+        System.out.println(player.getVelocityX() + " " + player.getVelocityY());
+    }
+
+    public void animateJump(Player player){
+        boolean stop = false;
+        player.setPosX(player.getPosX() + player.getVelocityX() / 24);
+        player.setPosY(player.getPosY() - player.getVelocityY() / 24);
+        player.setVelocityY(player.getVelocityY() + gravity / 24);
+        //System.out.println(player.getVelocityY());
+
+        for(StaticEntity statics : level.getStatics()){
+            stop = stop || statics.collision(player.getHitBox().getBoundsInLocal());
+        }
+        System.out.println("Stop 1 " + stop);
+        Player opponent = player1Turn ? level.getPlayer2() : level.getPlayer1();
+
+        //stop |= GUIHelpers.isOutOfScreen(player.getHitBox().getBoundsInLocal(), screenX, screenY) || opponent.collision(player.getHitBox().getBoundsInLocal());
+        System.out.println(GUIHelpers.isOutOfScreen(player.getHitBox().getBoundsInLocal(), screenX, screenY));
+        if(stop){
+            jumpTimeLine.stop();
+            level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
+            level.getGame().addEventFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+            level.getGame().getChildren().add(aimLine);
+            drawAimline(robot.getMouseX(), robot.getMouseY(), opponent.getPosX(), opponent.getPosY());
+        }
+
+
+
     }
 
     public MenuController getMenuController() {

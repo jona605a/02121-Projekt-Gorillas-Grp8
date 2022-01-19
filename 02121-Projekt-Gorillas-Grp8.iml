@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Advanced Gorrila/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/SimpGorillas/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Advanced Gorrila/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/SimpGorillas" />
       <excludeFolder url="file://$MODULE_DIR$/SIMPGORILLA" />
     </content>
     <orderEntry type="inheritedJdk" />
