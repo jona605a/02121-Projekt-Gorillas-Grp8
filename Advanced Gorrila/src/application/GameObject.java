@@ -201,7 +201,14 @@ public class GameObject {
             stop = stop || statics.collision(castable.getHitBox().getLayoutBounds());
         }
 
-        if(!outOfScreen && (castable.getHitBox().getCenterY() < 0)){
+        for (PowerUp powerUp : level.getPowerUps()) {
+            if (powerUp.collision(castable.getCircle().getLayoutBounds())) {
+                powerUp.onCollision(this);
+                return;
+            }
+        }
+
+        if(!outOfScreen && (castable.getCircle().getCenterY() < 0)){
             outOfScreen = true;
             level.getGame().getChildren().add(outOfScreenTrackArrow);
         }
