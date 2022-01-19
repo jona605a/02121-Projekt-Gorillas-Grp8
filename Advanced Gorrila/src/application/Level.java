@@ -21,7 +21,7 @@ public class Level {
     private double buildingWidth, buildingStoryHeight;
     private Random r = new Random();
     private int numOfBuildings = 10;
-    private PowerUp[] powerUps;
+    private ArrayList<PowerUp> powerUps;
     private int numOfPowerUps = 20;
     private Image backgroundImg;
     private ImageView bg1;
@@ -41,10 +41,9 @@ public class Level {
             statics.add(new Building(buildingWidth * i, screenY - buildingStoryHeight * stories, buildingWidth,buildingStoryHeight, stories));
             game.getChildren().addAll(statics.get(i).getSprites());
         }
-        powerUps = PowerUpSpawner.spawnPowerUps(0,  0, screenX, screenY-buildingStoryHeight*2, 20, statics);
+        powerUps = PowerUpSpawner.spawnPowerUps(0,  0, screenX, screenY-buildingStoryHeight*2, numOfPowerUps, statics);
         for (PowerUp powerUp : powerUps ) {
-            if ( powerUp == null) System.out.println();
-            else game.getChildren().add(powerUp.getSprite());
+            game.getChildren().add(powerUp.getSprite());
         }
         player1 = new Player(10,"Player 1",buildingWidth / 2, statics.get(0).getY());
         player2 = new Player(10,"Player 2",buildingWidth / 2 + buildingWidth * (numOfBuildings - 1), statics.get((numOfBuildings - 1)).getY());
@@ -110,5 +109,9 @@ public class Level {
         return statics;
     }
 
-    public PowerUp[] getPowerUps() { return powerUps;}
+    public ArrayList<PowerUp> getPowerUps() { return powerUps;}
+
+    public void setPowerUps(ArrayList<PowerUp> newPowerUps) {
+        this.powerUps = newPowerUps;
+    }
 }
