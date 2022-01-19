@@ -32,6 +32,7 @@ public class GameObject {
     Line aimLine = new Line(0,0,0,0);
     QuadCurve jumpLine = new QuadCurve();
     private boolean firing;
+    private boolean fired;
     private boolean jumpMode;
     Timeline fireLineTimeline;
     Timeline thrownCastableTimeline;
@@ -48,7 +49,7 @@ public class GameObject {
     private EventHandler<MouseEvent> jump;
     Robot robot = new Robot();
     Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
-    private int aimlineMinRadius = 20;
+    private int aimlineMinRadius = 30;
     private int aimlineMaxRadius = 100;
 
 
@@ -58,6 +59,7 @@ public class GameObject {
         player1Turn = true;
         gameRunning = false;
         jumpMode = false;
+        fired = false;
         outOfScreenTrackArrow.setFill(Color.YELLOW);
         outOfScreenTrackArrow.setStroke(Color.BLACK);
         jumpLine.setFill(Color.TRANSPARENT);
@@ -82,7 +84,7 @@ public class GameObject {
             playerTurn(level.getPlayer2());
             drawAimline(robot.getMouseX(), robot.getMouseY(), level.getPlayer2().getPosX(),level.getPlayer2().getPosY());
         }
-        player1Turn = !player1Turn;
+
 
 
     }
@@ -122,26 +124,34 @@ public class GameObject {
     public void startFireIncrease(MouseEvent event, Player player){
         // Triggers when the mouse is pressed:
         // Begins drawing a growing line towards the mouse
+
+        if(firing){
+            event.consume();
+            return;
+        }
+
+        // firing setup
+        firing = true;
+        double angle = GUIHelpers.getAngleOfLine(player.getPosX(), player.getPosY(), event.getX(), event.getY());
+        aimLine.setStartX(player.getPosX() + aimlineMinRadius * Math.cos(angle));
+        aimLine.setStartY(player.getPosY() - aimlineMinRadius * Math.sin(angle));
+        aimLine.setEndX(player.getPosX() + aimlineMinRadius * Math.cos(angle));
+        aimLine.setEndY(player.getPosY() - aimlineMinRadius * Math.sin(angle));
+        // When firing, listen for when the mouse is released
+        level.getGame().addEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
+
         player.setSprite(player.gorilla2);
         fireLineTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0 / 24), (e) -> {drawFireLine(event, player.getPosX(), player.getPosY());}));
         level.getGame().removeEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);
         fireLineTimeline.setCycleCount(Timeline.INDEFINITE);
         fireLineTimeline.play();
+
+
     }
 
     public void drawFireLine(MouseEvent event, double playerX, double playerY){
         double angle = Math.atan((playerY - event.getY()) / (event.getX() - playerX));
         if(playerX > event.getX()) angle += Math.PI;
-
-        if(!firing){
-            aimLine.setStartX(playerX + aimlineMinRadius * Math.cos(angle));
-            aimLine.setStartY(playerY - aimlineMinRadius * Math.sin(angle));
-            aimLine.setEndX(playerX + aimlineMinRadius * Math.cos(angle));
-            aimLine.setEndY(playerY - aimlineMinRadius * Math.sin(angle));
-            firing = true;
-            // When firing, listen for when the mouse is released
-            level.getGame().addEventFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
-        }
 
         if(Math.abs(aimLine.getEndX() - aimLine.getStartX()) < Math.abs(Math.cos(angle) * 99)){
             aimLine.setEndX(aimLine.getEndX() +  Math.cos(angle) * 3);
@@ -154,6 +164,12 @@ public class GameObject {
     public void fireCastable(MouseEvent event, Player player){
         // Triggers when the mouse is released:
         // Pauses the players' interaction and animates the throw of the castable.
+
+        if(fired) {
+            event.consume();
+            return;
+        }
+        fired = true;
         player.setSprite(player.gorilla1);
         fireLineTimeline.stop();
         level.getGame().removeEventFilter(MouseEvent.MOUSE_PRESSED,firePressed);
@@ -220,6 +236,13 @@ public class GameObject {
             aimLine.setEndY(0);
             level.getGame().getChildren().remove(outOfScreenTrackArrow);
             outOfScreen = false;
+            player1Turn = !player1Turn;
+            fired = false;
+            try{
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             gameLoop();
         }
 
@@ -258,7 +281,7 @@ public class GameObject {
     public void drawJumpLine(double mouseX, Player player){
         double jumpSpeed = 38.36 * 1.5;
         double x = player.getPosX();
-        double y = player.getPosY() + player.getHitBox().getRadius();
+        double y = player.getPosY();
         double maxX = jumpSpeed * Math.cos(Math.PI/4) * jumpSpeed * Math.sin(Math.PI/4) / (-gravity) * 2;
         double xlength = Math.abs(mouseX - x) > maxX ? maxX : mouseX - x;
         double angle = Math.PI/2 - Math.asin(-gravity * xlength / Math.pow(jumpSpeed, 2)) / 2;
@@ -309,16 +332,16 @@ public class GameObject {
         player.setPosX(player.getPosX() + player.getVelocityX() / 24);
         player.setPosY(player.getPosY() - player.getVelocityY() / 24);
         player.setVelocityY(player.getVelocityY() + gravity / 24);
-        //System.out.println(player.getVelocityY());
 
         for(StaticEntity statics : level.getStatics()){
             stop = stop || statics.collision(player.getHitBox().getBoundsInLocal());
         }
         System.out.println("Stop 1 " + stop);
         Player opponent = player1Turn ? level.getPlayer2() : level.getPlayer1();
+        System.out.println(player1Turn);
 
-        //stop |= GUIHelpers.isOutOfScreen(player.getHitBox().getBoundsInLocal(), screenX, screenY) || opponent.collision(player.getHitBox().getBoundsInLocal());
-        System.out.println(GUIHelpers.isOutOfScreen(player.getHitBox().getBoundsInLocal(), screenX, screenY));
+        stop |= GUIHelpers.isOutOfScreen(player.getHitBox().getBoundsInLocal(), screenX, screenY) || opponent.collision(player.getHitBox().getBoundsInLocal());
+
         if(stop){
             jumpTimeLine.stop();
             level.getGame().addEventFilter(MouseEvent.MOUSE_MOVED, aimHandler);

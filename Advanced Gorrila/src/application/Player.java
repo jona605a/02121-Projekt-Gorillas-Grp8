@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
@@ -16,7 +17,7 @@ public class Player {
     private double posX, posY;
     private double velocityX, velocityY;
     private ArrayList<Castable> castables = new ArrayList<Castable>();
-    private Circle hitBox = new Circle();
+    private Rectangle hitBox = new Rectangle();
     private Castable selectedCastable;
     private Label nameLabel;
     private ImageView spriteView;
@@ -28,13 +29,14 @@ public class Player {
         this.hitPoints = hp;
         this.name = name;
         posX = x;
-        posY = y - gorilla1.getHeight()/2;
+        posY = y - gorilla1.getHeight() / 2;
         velocityX = 0;
         velocityY = 0;
         castables.add(new Banana(x, y));
-        hitBox.setRadius(gorilla1.getHeight()/2);
-        hitBox.setCenterX(x);
-        hitBox.setCenterY(y);
+        hitBox.setHeight(gorilla1.getHeight());
+        hitBox.setWidth(0.8 * gorilla1.getWidth());
+        hitBox.setX(x - gorilla1.getWidth() * 0.4);
+        hitBox.setY(y - gorilla1.getHeight());
         selectedCastable = new Banana(posX, posY);
 
         int noOfCoconuts = 10;
@@ -68,12 +70,12 @@ public class Player {
 
     public void setSprite(Image image) {
         spriteView.setImage(image);
-        spriteView.setX(posX - image.getWidth()/2);
-        spriteView.setY(posY - image.getHeight()/2);
+        spriteView.setX(posX - image.getWidth() * 0.5);
+        spriteView.setY(posY - image.getHeight() / 2);
         //System.out.println(image.getHeight());
     }
 
-    public Circle getHitBox() {
+    public Rectangle getHitBox() {
         return hitBox;
     }
 
@@ -128,13 +130,13 @@ public class Player {
 
     public void setPosX(double posX) {
         this.posX = posX;
-        hitBox.setCenterX(posX);
-        spriteView.setX(posX - gorilla1.getWidth() / 2);
+        hitBox.setX(posX - gorilla1.getWidth() * 0.4);
+        spriteView.setX(posX - gorilla1.getWidth() * 0.5);
     }
 
     public void setPosY(double posY) {
         this.posY = posY;
-        hitBox.setCenterY(posY);
+        hitBox.setY(posY - gorilla1.getHeight() / 2);
         spriteView.setY(posY - gorilla1.getHeight() / 2);
     }
 
