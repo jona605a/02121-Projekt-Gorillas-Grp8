@@ -7,9 +7,11 @@ public class Coconut extends Castable {
 	//A harder hitting castable than the regular banana.
 
 	Coconut(double x, double y) {
-		super(x, y, 5, 1);
-		circle = new Circle(x,y,6.5, Color.BROWN);
-        circle.setStroke(Color.BLACK);
+		super(x, y);
+		damage = 20;
+		weight = 2;
+		hitBox = new Circle(x,y,6.5, Color.BROWN);
+        hitBox.setStroke(Color.BLACK);
         //circle.setVisible(false);
         setSprite(coconut);
 	}

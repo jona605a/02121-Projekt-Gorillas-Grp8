@@ -39,18 +39,16 @@ public class Level {
             statics.add(new Building(buildingWidth * i, screenY - buildingStoryHeight * stories, buildingWidth,buildingStoryHeight, stories));
             game.getChildren().addAll(statics.get(i).getSprites());
         }
-        player1 = new Player(10,"Player 1",buildingWidth / 2, statics.get(0).getY());
-        player2 = new Player(10,"Player 2",buildingWidth / 2 + buildingWidth * (numOfBuildings - 1), statics.get((numOfBuildings - 1)).getY());
+        player1 = new Player(100,"Player 1",buildingWidth / 2, statics.get(0).getY());
+        player2 = new Player(100,"Player 2",buildingWidth / 2 + buildingWidth * (numOfBuildings - 1), statics.get((numOfBuildings - 1)).getY());
         backgroundImg = new Image("/Images/Sky.png", screenX, screenY, false, false);
         bg1 = new ImageView(backgroundImg);
         bg2 = new ImageView(backgroundImg);
         backgroundTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/24), (e) -> {animateBackground();}));
         backgroundTimeline.setCycleCount(-1);
 
-        game.getChildren().add(player1.getNameLabel());
-        game.getChildren().add(player2.getNameLabel());
-        game.getChildren().add(player1.getSpriteView());
-        game.getChildren().add(player2.getSpriteView());
+        player1.addNodes(game);
+        player2.addNodes(game);
         game.getChildren().add(bg1);
         game.getChildren().add(bg2);
 

@@ -7,32 +7,29 @@ import javafx.scene.shape.Circle;
 public class Castable {
     protected double x, y;
     protected double velocityX, velocityY;
-    protected Circle circle;
-    private int damage;
-    private double weight;
-    private ImageView spriteView;
-    public Image banana = new Image("/Images/Banan.png", 20, 20, true, false);
-    public Image coconut = new Image("/Images/Coconut.png", 20, 20, true, false);
-    private Image currentImage;
+    double damage;
+    protected Circle hitBox;
+    protected double weight;
+    protected ImageView spriteView;
+    protected Image coconut = new Image("/Images/Coconut.png", 20, 20, true, false);
+    protected Image currentImage;
 
 
-    Castable(double x, double y, int damage, double weight){
+    Castable(double x, double y){
         this.x = x;
         this.y = y;
-        this.damage = damage;
-        this.weight = weight;
         spriteView = new ImageView();
         spriteView.setPreserveRatio(true);
     }
 
     public void setX(double x) {
-        circle.setCenterX(x);
+        hitBox.setCenterX(x);
         spriteView.setX(x - currentImage.getWidth()/2);
         this.x = x;
     }
 
     public void setY(double y) {
-        circle.setCenterY(y);
+        hitBox.setCenterY(y);
         spriteView.setY(y - currentImage.getHeight()/2);
         this.y = y;
     }
@@ -73,11 +70,11 @@ public class Castable {
         velocityY = vy;
     }
 
-    public Circle getCircle() {
-        return circle;
+    public Circle getHitBox() {
+        return hitBox;
     }
     
-    public int getDamage() {
+    public double getDamage() {
     	return damage;
     }
     
@@ -85,7 +82,7 @@ public class Castable {
     	return weight;
     }
 
-    public void setDamage(int newDamage) {
+    public void setDamage(double newDamage) {
         this.damage = newDamage;
     }
 }

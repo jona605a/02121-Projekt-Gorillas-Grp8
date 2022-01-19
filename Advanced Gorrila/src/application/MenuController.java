@@ -29,7 +29,6 @@ public class MenuController {
     private Image img = new Image("/Images/MenuBackground.png");
     private BackgroundImage bgi = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.DEFAULT,new BackgroundSize(0,0,false,false,false,true));
     private Background bg = new Background(bgi);
-    QuadCurve quad;
 
     double screenY, screenX;
 
@@ -48,19 +47,6 @@ public class MenuController {
         screenX = screenWidth;
         mainMenu = new Menu("Gorrilas");
         playerNamesMenu = new Menu("Change player names");
-        quad = new QuadCurve();
-
-        quad.setStartX(0.0f);
-        quad.setStartY(50.0f);
-        quad.setEndX(50.0f);
-        quad.setEndY(50.0f);
-        quad.setControlX(25.0f);
-        quad.setControlY(0.0f);
-        quad.setFill(Color.TRANSPARENT);
-        quad.setStroke(Color.BLACK);
-        quad.setOpacity(0.5);
-
-        mainMenu.menuPane.getChildren().add(quad);
 
 
 

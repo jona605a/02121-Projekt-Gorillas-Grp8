@@ -2,8 +2,10 @@ package application;
 
 import javafx.geometry.Bounds;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -12,7 +14,7 @@ import javafx.scene.text.TextAlignment;
 import java.util.ArrayList;
 
 public class Player {
-    private int hitPoints;
+    private double hitPoints;
     private String name;
     private double posX, posY;
     private double velocityX, velocityY;
@@ -21,11 +23,15 @@ public class Player {
     private Castable selectedCastable;
     private Label nameLabel;
     private ImageView spriteView;
+    private ProgressBar healthBar;
+
     public Image gorilla1 = new Image("/Images/Gorilla1.png", 58, 58, true, false);
     public Image gorilla2 = new Image("/Images/Gorilla2.png", 58, 58, true, false);
     public Image gorilla3 = new Image("/Images/Gorilla3.png", 58, 58, true, false);
 
-    Player(int hp, String name, double x, double y){
+
+    Player(double hp, String name, double x, double y){
+
         this.hitPoints = hp;
         this.name = name;
         posX = x;
@@ -50,7 +56,7 @@ public class Player {
         nameLabel.setFont(new Font("Verdana", 16));
         nameLabel.setText(this.name);
         nameLabel.setLayoutX(posX - GUIHelpers.textSize(nameLabel)/2);
-        nameLabel.setLayoutY(posY + gorilla1.getHeight()/2 + 15);
+        nameLabel.setLayoutY(posY - (gorilla1.getHeight()/2 + 25));
         nameLabel.setTextAlignment(TextAlignment.CENTER);
 
         // Set player sprite
@@ -58,6 +64,20 @@ public class Player {
         spriteView.setPreserveRatio(true);
         setSprite(gorilla1);
 
+        // player healthbar
+        healthBar = new ProgressBar(1);
+        healthBar.setMinSize(60,15);
+        healthBar.setMaxSize(60, 15);
+        healthBar.setLayoutX(x - 30);
+        healthBar.setLayoutY(y - gorilla1.getHeight() - 40);
+        healthBar.setStyle("-fx-accent: green");
+
+    }
+
+    public void addNodes(AnchorPane pane){
+        pane.getChildren().add(nameLabel);
+        pane.getChildren().add(healthBar);
+        pane.getChildren().add(spriteView);
     }
 
     public boolean collision(double x, double y){
@@ -68,11 +88,26 @@ public class Player {
         return hitBox.intersects(localBounds);
     }
 
+    boolean collision(Castable castable){
+        if(hitBox.intersects(castable.getHitBox().getLayoutBounds())){
+            applyDamage(castable.getDamage());
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public void setSprite(Image image) {
         spriteView.setImage(image);
         spriteView.setX(posX - image.getWidth() * 0.5);
         spriteView.setY(posY - image.getHeight() / 2);
         //System.out.println(image.getHeight());
+    }
+
+    public void applyDamage(double damage){
+        hitPoints -= damage;
+        hitPoints = hitPoints < 0 ? 0 : hitPoints;
+        healthBar.setProgress(hitPoints / 100);
     }
 
     public Rectangle getHitBox() {
@@ -103,7 +138,7 @@ public class Player {
         return velocityY;
     }
 
-    public int getHitPoints() {
+    public double getHitPoints() {
         return hitPoints;
     }
 
@@ -132,12 +167,16 @@ public class Player {
         this.posX = posX;
         hitBox.setX(posX - gorilla1.getWidth() * 0.4);
         spriteView.setX(posX - gorilla1.getWidth() * 0.5);
+        nameLabel.setLayoutX(posX - GUIHelpers.textSize(nameLabel)/2);
+        healthBar.setLayoutX(posX - 30);
     }
 
     public void setPosY(double posY) {
         this.posY = posY;
         hitBox.setY(posY - gorilla1.getHeight() / 2);
         spriteView.setY(posY - gorilla1.getHeight() / 2);
+        nameLabel.setLayoutY(posY - (gorilla1.getHeight()/2 + 25));
+        healthBar.setLayoutY(posY - gorilla1.getHeight()/2 - 40);
     }
 
     public void addCastable(Castable castable) {
