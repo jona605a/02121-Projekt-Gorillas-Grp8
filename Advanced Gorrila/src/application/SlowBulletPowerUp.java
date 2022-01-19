@@ -7,6 +7,7 @@ public class SlowBulletPowerUp extends  PowerUp{
     }
 
     public void onCollision(GameObject gameObject) {
+        // Get current player's thrown castable and give it half speed
         boolean player1Turn = gameObject.isPlayer1Turn();
         Castable selectedCastable = player1Turn ? gameObject.getLevel().getPlayer1().getSelectedCastable() : gameObject.getLevel().getPlayer2().getSelectedCastable();
         selectedCastable.setVelocityX(selectedCastable.getVelocityX() * 0.5);

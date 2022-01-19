@@ -6,6 +6,7 @@ public class PowerfulBulletPowerUp extends PowerUp{
     }
 
     public void onCollision(GameObject gameObject) {
+        // The current player's thrown castable deals double damage
         boolean player1Turn = gameObject.isPlayer1Turn();
         Castable selectedCastable = player1Turn ? gameObject.getLevel().getPlayer1().getSelectedCastable() : gameObject.getLevel().getPlayer2().getSelectedCastable();
         selectedCastable.setDamage(selectedCastable.getDamage() * 2);

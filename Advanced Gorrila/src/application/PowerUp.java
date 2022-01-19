@@ -30,6 +30,7 @@ public abstract class PowerUp extends StaticEntity {
     public abstract void onCollision(GameObject gameObject);
 
     public void delete(GameObject gameObject) {
+        // Removing the power up from the game
         gameObject.getLevel().getGame().getChildren().remove(this.getSprite());
         ArrayList<PowerUp> powerUps = gameObject.getLevel().getPowerUps();
         powerUps.remove(this);

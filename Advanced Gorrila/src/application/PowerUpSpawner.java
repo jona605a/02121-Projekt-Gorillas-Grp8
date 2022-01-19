@@ -8,7 +8,7 @@ import java.util.Random;
 public class PowerUpSpawner {
 
     public static ArrayList<PowerUp> spawnPowerUps(double xMin, double yMin, double width, double height, int amount, ArrayList<StaticEntity> statics) {
-        // spawns and returns a list of new powerups
+        // spawns and returns an ArrayList of new powerups
         int r = 50;
         ArrayList<PowerUp> powerUps = new ArrayList<PowerUp>();
 
@@ -18,6 +18,7 @@ public class PowerUpSpawner {
             double y;
 
             do {
+                // Ensuring that no powerup spawns inside a building
                 valid = true;
                 x = randomNumber(xMin, xMin + width);
                 y = randomNumber(yMin, yMin + height);
@@ -26,6 +27,8 @@ public class PowerUpSpawner {
                 }
 
             } while (!valid);
+
+            // Picking a random powerup
             int powerUpType = randomNumber( 6);
 
             switch (powerUpType) {
