@@ -3,7 +3,7 @@ package application;
 public class SlowBulletPowerUp extends  PowerUp{
 
     public SlowBulletPowerUp(double x, double y, int r) {
-        super(x, y, r, "Images/SlowBulletPUP.png");
+        super(x, y, r, "/Images/SlowBulletPUP.png");
     }
 
     public void onCollision(GameObject gameObject) {

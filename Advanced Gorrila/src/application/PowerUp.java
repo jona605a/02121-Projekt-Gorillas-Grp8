@@ -11,12 +11,15 @@ public abstract class PowerUp extends StaticEntity {
     private Circle shape;
     private Image sprite;
     private ImageView spriteView;
-    private String type;
 
     public PowerUp(double x, double y, int r, String imagePath) {
+        this.x = x;
+        this.y = y;
         this.shape = new Circle(x, y, r);
         this.sprite = new Image(imagePath, r, r, true, false);
         this.spriteView = new ImageView(this.sprite);
+        this.spriteView.setX(x);
+        this.spriteView.setY(y);
 
     }
 
@@ -39,7 +42,7 @@ public abstract class PowerUp extends StaticEntity {
 
     @Override
     Node[] getSprites() {
-        return new Node[0];
+        return null;
     }
 
     @Override

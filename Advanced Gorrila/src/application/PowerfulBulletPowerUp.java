@@ -2,7 +2,7 @@ package application;
 
 public class PowerfulBulletPowerUp extends PowerUp{
     public PowerfulBulletPowerUp(double x, double y, int r) {
-        super(x, y, r, "Images/PowefulBulletPUP.png");
+        super(x, y, r, "/Images/PowerfulBulletPUP.png");
     }
 
     public void onCollision(GameObject gameObject) {

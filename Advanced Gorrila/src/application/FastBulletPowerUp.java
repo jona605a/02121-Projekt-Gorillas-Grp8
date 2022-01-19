@@ -4,7 +4,7 @@ public class FastBulletPowerUp extends PowerUp {
 
 
     public FastBulletPowerUp(double x, double y, int r) {
-        super(x, y, r, "Images/FastBulletPUP.png");
+        super(x, y, r, "/Images/FastBulletPUP.png");
     }
 
     public void onCollision(GameObject gameObject) {

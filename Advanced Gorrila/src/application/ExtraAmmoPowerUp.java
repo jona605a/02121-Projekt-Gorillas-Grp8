@@ -2,7 +2,7 @@ package application;
 
 public class ExtraAmmoPowerUp extends PowerUp{
     public ExtraAmmoPowerUp(double x, double y, int r) {
-        super(x, y, r, "Images/ExtraAmmoPUP.png");
+        super(x, y, r, "/Images/ExtraAmmoPUP.png");
     }
 
     public void onCollision(GameObject gameObject) {
