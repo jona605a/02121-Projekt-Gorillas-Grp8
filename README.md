@@ -18,6 +18,15 @@ This version of Gorillas has some new features compared to the original:
 - Player names
 - Animated background
 
+# Controls
+Mouse Positin - Aiming
+Mouse Click - Fire
+A - Switch between projectiles
+S - Switch between power-ups
+J - Toggle/Untoggle jump mode
+U - Use power-up
+M - Mute music
+
 # Projectiles
 The game features two different types of projectiles - Bananas and Coconuts.
 Bananas are the default projectiles - They deal base damage but fly fast
