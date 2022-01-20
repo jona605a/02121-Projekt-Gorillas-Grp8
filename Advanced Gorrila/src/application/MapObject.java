@@ -2,10 +2,12 @@ package application;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 
 public abstract class MapObject {
 
-    double x, y, width, height;
+    protected double x, y, width, height;
+    protected double shapeX, shapeY;
 
     abstract boolean collision(double x, double y);
 
@@ -15,7 +17,7 @@ public abstract class MapObject {
 
     abstract Node[] getSprites();
 
-    abstract Node getSprite();
+    abstract ImageView getSprite();
 
     public double getX() {
         return x;
@@ -24,6 +26,8 @@ public abstract class MapObject {
     public double getY() {
         return y;
     }
+
+
 
     public double getWidth() {
         return width;

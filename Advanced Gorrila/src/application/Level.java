@@ -18,7 +18,6 @@ public class Level {
     private AnchorPane game;
     private Scene gameScene;
     private Random r = new Random();
-    private ArrayList<PowerUp> powerUps;
     private int numOfPowerUps = 20;
 
     private Map level1;
@@ -43,16 +42,11 @@ public class Level {
         game = randomLevel.getPane();
         gameScene = new Scene(game, screenX, screenY);
 
-        powerUps = PowerUpSpawner.spawnPowerUps(0,  0, screenX, screenY-currentLevel.getBuildingStoryHeight()*2, numOfPowerUps, getMapObjects());
-        for (PowerUp powerUp : powerUps ) {
-            game.getChildren().add(powerUp.getSprite());
-        }
-
         firstBuilding =  getBuildings().get(0);
         lastBuilding =  getBuildings().get(currentLevel.getNumOfBuildings() - 1);
 
-        player1 = new Player(100,"Player 1",currentLevel.getBuildingWidth() / 2 + firstBuilding.getX(), firstBuilding.getY());
-        player2 = new Player(100,"Player 2",currentLevel.getBuildingWidth() / 2 + lastBuilding.getX(), lastBuilding.getY());
+        player1 = new Player(100,"Player 1",currentLevel.getBuildingWidth() / 2 + firstBuilding.getX(), firstBuilding.getY(), screenY);
+        player2 = new Player(100,"Player 2",currentLevel.getBuildingWidth() / 2 + lastBuilding.getX(), lastBuilding.getY(), screenY);
 
         backgroundImg = new Image("/Images/Sky.png", screenX, screenY, false, false);
         bg1 = new ImageView(backgroundImg);
@@ -149,11 +143,8 @@ public class Level {
         return currentLevel.getBuildings();
     }
 
-    public ArrayList<PowerUp> getPowerUps() { return powerUps;}
+    public ArrayList<PowerUp> getPowerUps() { return currentLevel.getPowerUps();}
 
-    public void setPowerUps(ArrayList<PowerUp> newPowerUps) {
-        this.powerUps = newPowerUps;
-    }
 
     public Timeline getBackgroundTimeline() {
         return backgroundTimeline;

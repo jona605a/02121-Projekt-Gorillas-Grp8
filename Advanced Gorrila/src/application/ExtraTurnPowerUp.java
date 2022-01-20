@@ -6,10 +6,14 @@ public class ExtraTurnPowerUp extends PowerUp{
         super(x, y, r, "/Images/ExtraTurnPUP.png");
     }
 
-    public void onCollision(GameObject gameObject) {
+    public void onUse(GameObject gameObject) {
         // Gives the current player another turn
         boolean player1Turn = gameObject.isPlayer1Turn();
         gameObject.setPlayer1Turn(!player1Turn);
-        super.delete(gameObject);
+    }
+
+    @Override
+    public void onUse(Player player) {
+        // does nothing
     }
 }

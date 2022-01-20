@@ -19,6 +19,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.event.EventHandler;
 
+import javax.swing.*;
+import java.sql.Time;
+import java.util.Arrays;
+import java.util.Random;
+
 
 public class GameObject {
 
@@ -26,7 +31,8 @@ public class GameObject {
     private MenuController menuController = new MenuController(this);
     private Stage mainStage;
     private boolean muted = false;
-    private double volume;
+    private double volume = 0.2;
+    private double prevVolume;
     Rectangle2D screenBounds = Screen.getPrimary().getBounds();
     private double screenX = screenBounds.getMaxX(), screenY = screenBounds.getMaxY();
 
@@ -42,7 +48,9 @@ public class GameObject {
     Timeline fireLineTimeline = new Timeline();
     Timeline thrownCastableTimeline = new Timeline();;
     Timeline jumpTimeLine = new Timeline();
+    Timeline powerUpFallTimeline = new Timeline();
     private boolean jumping;
+    private boolean falling;
 
     private boolean player1Turn;
     private boolean gameRunning;
@@ -55,20 +63,26 @@ public class GameObject {
     private EventHandler<MouseEvent> drawJump;
     private EventHandler<MouseEvent> jump;
     private EventHandler<KeyEvent> enterPause;
+    private EventHandler<KeyEvent> changePowerUps;
+    private EventHandler<KeyEvent> usePowerUp;
+    private EventHandler<KeyEvent> changeCastable;
     Robot robot = new Robot();
+    Random r = new Random();
     Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
     private int aimlineMinRadius = 35;
     private int aimlineMaxRadius = 100;
+    private int turnsTillPowerUp = 0;
+    private double powerUpVelocity = 0;
 
 
     GameObject(Stage mainStage) throws Exception {
-
         this.mainStage = mainStage;
         player1Turn = true;
         gameRunning = false;
         jumpMode = false;
         fired = false;
         jumping = false;
+        falling = false;
         outOfScreenTrackArrow.setFill(Color.YELLOW);
         outOfScreenTrackArrow.setStroke(Color.BLACK);
         jumpLine.setFill(Color.TRANSPARENT);
@@ -76,6 +90,7 @@ public class GameObject {
         enterPause = event -> enterPauseMenu(event);
         level.getGameScene().addEventFilter(KeyEvent.KEY_PRESSED, enterPause);
         mainStage.addEventFilter(KeyEvent.KEY_PRESSED, (e) -> toggleMute(e));
+
     }
 
 
@@ -90,6 +105,9 @@ public class GameObject {
             }
             if(fired){
                 thrownCastableTimeline.pause();
+            }
+            if(falling){
+                powerUpFallTimeline.pause();
             }
             level.getBackgroundTimeline().pause();
             menuController.goToPause();
@@ -108,6 +126,7 @@ public class GameObject {
         firing = false;
         outOfScreen = false;
         didJump = false;
+        falling = false;
 
         removeNode(aimLine);
         removeNode(jumpLine);
@@ -129,10 +148,13 @@ public class GameObject {
         if(event.getCode() == KeyCode.M){
             if(muted){
                 muted = false;
+                volume = prevVolume;
                 menuController.getMusic().changeVolume(volume);
             }else{
                 muted = true;
+                prevVolume = volume;
                 volume = menuController.getMusic().getCurrentSong().getMediaPlayer().getVolume();
+                volume = 0;
                 menuController.getMusic().changeVolume(0);
             }
         }
@@ -141,7 +163,31 @@ public class GameObject {
 
     public void gameLoop(){
         level.getGame().getChildren().add(aimLine);
-
+        if(turnsTillPowerUp == 0){
+            powerUpVelocity = 0;
+            turnsTillPowerUp = 2 + r.nextInt(3);
+            double x = 50 + r.nextDouble(screenX - 100);
+            double y = 0;
+            int radius = 15;
+            int powR = r.nextInt(6);
+            PowerUp p = switch (powR) {
+                case 0 -> (new FastBulletPowerUp(x, y, radius));
+                case 1 -> (new SlowBulletPowerUp(x, y, radius));
+                case 2 -> (new ExtraAmmoPowerUp(x, y, radius));
+                case 3 -> (new ExtraHPPowerUp(x, y, radius)); //Missing sprite
+                case 4 -> (new PowerfulBulletPowerUp(x, y, radius));
+                case 5 -> (new ExtraTurnPowerUp(x, y, radius));
+                default -> new ExtraAmmoPowerUp(x,y,radius);
+            };
+            addNode(p.getSprite());
+            level.getPowerUps().add(p);
+            falling = true;
+            powerUpFallTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/24),e -> animatePowerUp(p)));
+            powerUpFallTimeline.setCycleCount(-1);
+            powerUpFallTimeline.play();
+        }else{
+            turnsTillPowerUp--;
+        }
         if(player1Turn){
             playerTurn(level.getPlayer1());
             drawAimline(robot.getMouseX(), robot.getMouseY(), level.getPlayer1().getPosX(),level.getPlayer1().getPosY());
@@ -158,7 +204,7 @@ public class GameObject {
         aimHandler  = event -> drawAimline(event, player.getPosX(), player.getPosY());
         firePressed = event -> startFireIncrease(event, player);
         fireReleased = event -> fireCastable(event, player);
-        toJumpMode = event -> toggleJumpMpde(event, player);
+        toJumpMode = event -> toggleJumpMode(event, player);
         drawJump = event -> drawJumpLine(event, player);
         jump = event -> playerJump(event, player);
         jumpMode = false;
@@ -171,6 +217,26 @@ public class GameObject {
 
 
 
+    }
+
+    public void animatePowerUp(PowerUp pu){
+        boolean stop = false;
+        pu.setY(pu.getY() - powerUpVelocity);
+        powerUpVelocity += gravity / 100;
+        for(MapObject obj : level.getMapObjects()){
+            stop = stop || pu.collision(obj.getShape().getLayoutBounds());
+        }
+        if(pu.collision(level.getPlayer1().getHitBox().getLayoutBounds())){
+            level.getPlayer1().getPowerUps().add(pu);
+            stop = true;
+        }
+        if(pu.collision(level.getPlayer2().getHitBox().getLayoutBounds())){
+            level.getPlayer2().getPowerUps().add(pu);
+            stop = true;
+        }
+        if(stop){
+            powerUpFallTimeline.stop();
+        }
     }
 
     public void drawAimline(MouseEvent event, double playerX, double playerY){
@@ -258,7 +324,7 @@ public class GameObject {
         //level.getGame().getChildren().add(selectedCastable.getCircle());
         removeNode(aimLine);
         firing = false;
-        Sound.play("/Sounds/Throw.mp3");
+        Sound.play("/Sounds/Throw.mp3", volume);
         thrownCastableTimeline.play();
     }
 
@@ -267,16 +333,10 @@ public class GameObject {
         castable.setX(castable.getX() + castable.getVelocityX() / 24);
         castable.setY(castable.getY() - castable.getVelocityY() / 24);
         castable.setVelocityY(castable.getVelocityY() + gravity / 24);
-        for(MapObject statics : level.getBuildings()){
-            stop = stop || statics.collision(castable.getHitBox().getLayoutBounds());
+        for(MapObject obj : level.getBuildings()){
+            stop = stop || obj.collision(castable.getHitBox().getLayoutBounds());
         }
 
-        for (PowerUp powerUp : level.getPowerUps()) {
-            if (powerUp.collision(castable.getHitBox().getLayoutBounds())) {
-                powerUp.onCollision(this);
-                return;
-            }
-        }
 
         if(!outOfScreen && (castable.getHitBox().getCenterY() < 0)){
             outOfScreen = true;
@@ -320,7 +380,7 @@ public class GameObject {
 
     }
 
-    public void toggleJumpMpde(KeyEvent event, Player player){
+    public void toggleJumpMode(KeyEvent event, Player player){
         if(event.getCode() == KeyCode.J){
             if(!jumpMode){
                 removeFilter(MouseEvent.MOUSE_MOVED, aimHandler);
@@ -385,12 +445,11 @@ public class GameObject {
             }else if(intercept != null && jumpLineIntersect(levelObj, jumpSpeed, angle)){
                 if(intercept.getX() > levelObj.getX()){
                     intercept = levelObj;
+
                 }
             }
         }
-        if(intercept != null){
-            System.out.println(intercept.getX());
-        }
+
     }
 
     public void playerJump(MouseEvent event, Player player){
@@ -418,9 +477,20 @@ public class GameObject {
         for(MapObject statics : level.getBuildings()){
             stop = stop || statics.collision(player.getHitBox().getBoundsInLocal());
         }
-        Player opponent = player1Turn ? level.getPlayer2() : level.getPlayer1();
+        int removeIndex = -1;
+        for(PowerUp p : level.getPowerUps()){
+            if(p.collision(player.getHitBox().getLayoutBounds())){
+                player.getPowerUps().add(p);
+                removeIndex = level.getPowerUps().indexOf(p);
+                removeNode(p.getSprite());
+            }
+        }
+        if(removeIndex > -1){
+            level.getPowerUps().remove(removeIndex);
+        }
 
-        stop |= GUIHelpers.isOutOfGame(player.getHitBox().getBoundsInLocal(), screenX, screenY) || opponent.collision(player.getHitBox().getBoundsInLocal());
+
+        stop |= GUIHelpers.isOutOfGame(player.getHitBox().getBoundsInLocal(), screenX, screenY);
 
         if(stop){
             jumpTimeLine.stop();
@@ -436,15 +506,25 @@ public class GameObject {
     }
 
     public boolean jumpLineIntersect(MapObject obj, double jumpSpeed, double angle){
+
+
         double objX1 = obj.getX() - jumpLine.getStartX();
+        objX1 = obj.getX() < jumpLine.getStartX() ? jumpLine.getStartX() : objX1;
         double objY1 = obj.getY() - jumpLine.getStartY();
-        double objX2 = objX1 + obj.getWidth();
-        double objY2 = objY1 + obj.getHeight();
+        double objX2 = obj.getX() + obj.getWidth();
+        double objY2 = objY1 - obj.getHeight();
+
+        if(angle > Math.PI / 2){
+
+        }
 
         double lineY1 = objX1 * Math.tan(angle) + gravity/2 * Math.pow(objX1 / (jumpSpeed * Math.cos(angle)),2);
         double lineY2 = objX2 * Math.tan(angle) + gravity/2 * Math.pow(objX2 / (jumpSpeed * Math.cos(angle)),2);
 
-        return (lineY2 > objY2 && lineY1 > objY1) || (lineY1 > objY1);
+        boolean onlyForwardCheck = ((lineY1 > lineY2) || lineY1 > 0);
+
+
+        return !((lineY2 > objY1 && lineY1 > objY1) || (lineY2 < objY2 && lineY1 < objY2)) && ((lineY1 > lineY2) || lineY1 > 0);
 
 
     }
@@ -481,6 +561,14 @@ public class GameObject {
         return thrownCastableTimeline;
     }
 
+    public Timeline getPowerUpFallTimeline() {
+        return powerUpFallTimeline;
+    }
+
+    public double getVolume() {
+        return volume;
+    }
+
     public boolean isPlayer1Turn() { return this.player1Turn;}
 
     public void setPlayer1Turn(boolean player1Turn) {
@@ -499,4 +587,16 @@ public class GameObject {
         return jumping;
     }
 
+    public boolean isFalling() {
+        return falling;
+    }
+
+    public void setVolume(double volume) {
+        if(muted){
+            prevVolume = volume;
+        }else{
+            this.volume = volume;
+        }
+
+    }
 }

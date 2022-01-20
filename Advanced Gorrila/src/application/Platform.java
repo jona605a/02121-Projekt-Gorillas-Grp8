@@ -43,7 +43,7 @@ public class Platform extends MapObject {
 	}
 
 	@Override
-	Node getSprite() {
+	ImageView getSprite() {
 		return spriteView;
 	}
 }

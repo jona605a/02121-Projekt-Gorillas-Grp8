@@ -92,7 +92,7 @@ public class Building extends MapObject {
     }
 
     @Override
-    Node getSprite() {
+    ImageView getSprite() {
         return null;
     }
 }

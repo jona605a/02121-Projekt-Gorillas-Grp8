@@ -17,9 +17,10 @@ public class Sound {
         mediaPlayer.play();
     }
 
-    public static void play(String path) {
+    public static void play(String path, double volume) {
         // For quick sound effects
         AudioClip clip = new AudioClip(Sound.class.getResource(path).toExternalForm());
+        clip.setVolume(volume);
         clip.play();
     }
 

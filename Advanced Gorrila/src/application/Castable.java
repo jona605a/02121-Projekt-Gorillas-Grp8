@@ -62,6 +62,18 @@ public class Castable {
         return velocityY;
     }
 
+    public Circle getHitBox() {
+        return hitBox;
+    }
+
+    public double getDamage() {
+        return damage;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
     public void setVelocityX(double vx){
         velocityX = vx;
     }
@@ -70,16 +82,8 @@ public class Castable {
         velocityY = vy;
     }
 
-    public Circle getHitBox() {
-        return hitBox;
-    }
-    
-    public double getDamage() {
-    	return damage;
-    }
-    
-    public double getWeight() {
-    	return weight;
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
     public void setDamage(double newDamage) {

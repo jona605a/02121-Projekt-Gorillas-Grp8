@@ -25,14 +25,19 @@ public class Player {
     private ImageView spriteView;
     private ProgressBar healthBar;
     private ArrayList<PowerUp> powerUps;
+    private PowerUp selectedPowerUp;
     private int numOfCoconuts;
+    private int selectedIndex = 0;
+    private Image redX = new Image("/Images/X.png");
+    private ImageView powerUpImage = new ImageView(redX);
+    private ImageView selectedAmmo = new ImageView();
 
     public Image gorilla1 = new Image("/Images/Gorilla1.png", 58, 58, true, false);
     public Image gorilla2 = new Image("/Images/Gorilla2.png", 58, 58, true, false);
     public Image gorilla3 = new Image("/Images/Gorilla3.png", 58, 58, true, false);
 
 
-    Player(double hp, String name, double x, double y){
+    Player(double hp, String name, double x, double y, double screenY){
 
         this.hitPoints = hp;
         this.name = name;
@@ -47,6 +52,8 @@ public class Player {
         hitBox.setY(y - gorilla1.getHeight());
         selectedCastable = new Banana(posX, posY);
         powerUps = new ArrayList<>();
+
+        selectedAmmo.setImage(selectedCastable.getSpriteView().getImage());
 
         numOfCoconuts = 10;
         // Adding coconuts as ammo
@@ -73,12 +80,29 @@ public class Player {
         healthBar.setLayoutY(y - gorilla1.getHeight() - 40);
         healthBar.setStyle("-fx-accent: green");
 
+        // ammo and powerup views
+        selectedAmmo.setPreserveRatio(true);
+        selectedAmmo.setFitWidth(50);
+        selectedAmmo.setFitWidth(50);
+        selectedAmmo.setX(x - selectedAmmo.getFitWidth() - 5);
+        selectedAmmo.setY(screenY - 100);
+
+
+        powerUpImage.setX(x + 5);
+        powerUpImage.setY(screenY - 100);
+        powerUpImage.setPreserveRatio(true);
+        powerUpImage.setFitWidth(50);
+        powerUpImage.setFitWidth(50);
+
+
     }
 
     public void addNodes(AnchorPane pane){
         pane.getChildren().add(nameLabel);
         pane.getChildren().add(healthBar);
         pane.getChildren().add(spriteView);
+        pane.getChildren().add(powerUpImage);
+        pane.getChildren().add(selectedAmmo);
     }
 
     public boolean collision(double x, double y){
@@ -115,7 +139,6 @@ public class Player {
         hitPoints -= damage;
         hitPoints = hitPoints < 0 ? 0 : hitPoints;
         healthBar.setProgress(hitPoints / 100);
-        System.out.println(hitPoints);
     }
 
     public void addCastable(Castable castable) {
@@ -123,12 +146,27 @@ public class Player {
     }
 
     public void switchCastable() {
-        if(castables.size() > 1) {
-            if(selectedCastable.getWeight() == castables.get(0).getWeight()) {
-                selectedCastable = new Coconut(posX, posY);
+        if(selectedIndex == 0){
+            if(castables.size() > 1){
+                selectedIndex = castables.size() - 1;
+                selectedCastable = castables.get(selectedIndex);
             }
-            else {
-                selectedCastable = new Banana(posX, posY);
+        }else{
+            selectedCastable = castables.get(0);
+            selectedIndex = 0;
+        }
+        selectedAmmo.setImage(selectedCastable.getSpriteView().getImage());
+    }
+
+    public void usePowerUp(){
+        if(powerUps.size() > 0){
+            selectedPowerUp.onUse(this);
+            powerUps.remove(selectedPowerUp);
+            if(powerUps.size() > 0){
+                powerUpImage.setImage(powerUps.get(0).getSprite().getImage());
+                selectedPowerUp = powerUps.get(0);
+            }else{
+                powerUpImage.setImage(redX);
             }
         }
     }
@@ -189,9 +227,14 @@ public class Player {
         return castables;
     }
 
+    public int getSelectedIndex() {
+        return selectedIndex;
+    }
+
     public void setName(String name) {
         this.name = name;
         nameLabel.setText(name);
+        nameLabel.setTextAlignment(TextAlignment.CENTER);
     }
 
     public void setVelocityX(double velocityX) {

@@ -7,12 +7,9 @@ public class FastBulletPowerUp extends PowerUp {
         super(x, y, r, "/Images/FastBulletPUP.png");
     }
 
-    public void onCollision(GameObject gameObject) {
+    public void onUse(Player player) {
         // Get current player's thrown castable and give it double speed
-        boolean player1Turn = gameObject.isPlayer1Turn();
-        Castable selectedCastable = player1Turn ? gameObject.getLevel().getPlayer1().getSelectedCastable() : gameObject.getLevel().getPlayer2().getSelectedCastable();
-        selectedCastable.setVelocityX(selectedCastable.getVelocityX() * 2);
-        selectedCastable.setVelocityY(selectedCastable.getVelocityY() * 2);
-        super.delete(gameObject);
+        Castable selectedCastable = player.getSelectedCastable();
+        selectedCastable.setWeight(selectedCastable.getWeight()  / 2);
     }
 }
