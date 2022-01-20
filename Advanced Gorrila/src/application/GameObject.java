@@ -7,6 +7,7 @@ import javafx.event.EventType;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -15,6 +16,7 @@ import javafx.scene.robot.Robot;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.QuadCurve;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -116,6 +118,10 @@ public class GameObject {
         }
     }
 
+    public boolean gameOver(){
+        return level.getPlayer2().getHitPoints() <= 0 || level.getPlayer1().getHitPoints() <= 0;
+    }
+
     public void endGame(){
         thrownCastableTimeline.stop();
         jumpTimeLine.stop();
@@ -140,8 +146,6 @@ public class GameObject {
         removeFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
         removeFilter(MouseEvent.MOUSE_MOVED, drawJump);
         removeFilter(MouseEvent.MOUSE_PRESSED, jump);
-
-
 
 
     }
@@ -419,7 +423,18 @@ public class GameObject {
             outOfScreen = false;
             player1Turn = !player1Turn;
             fired = false;
-            gameLoop();
+            if(!gameOver()){
+                gameLoop();
+            }else{
+                mainStage.setScene(menuController.getGameOverMenuScene());
+                Player winner = level.getPlayer1().getHitPoints() <= 0 ? level.getPlayer2() : level.getPlayer1();
+                Label tmp = menuController.getGameOverMenuTitel();
+                tmp.setText(winner.getName() + " wins!");
+                tmp.setLayoutX((screenX - GUIHelpers.textSize(tmp))/2);
+                menuController.getGameOverMenuTitel().setTextAlignment(TextAlignment.CENTER);
+
+            }
+
         }
 
     }

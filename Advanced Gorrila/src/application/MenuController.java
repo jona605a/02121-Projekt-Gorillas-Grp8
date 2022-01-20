@@ -31,6 +31,7 @@ public class MenuController {
     private Menu playerNamesMenu;
     private Menu pauseMenu;
     private Menu optionsMenu;
+    private Menu gameOverMenu;
     private Image img = new Image("/Images/MenuBackground.png");
     private BackgroundImage bgi = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.DEFAULT,new BackgroundSize(0,0,false,false,false,true));
     private Background bg = new Background(bgi);
@@ -55,6 +56,7 @@ public class MenuController {
         playerNamesMenu = new Menu("Change player names");
         pauseMenu = new Menu("Game Paused");
         optionsMenu = new Menu("Options");
+        gameOverMenu = new Menu("fill later");
 
 
 
@@ -81,6 +83,10 @@ public class MenuController {
         optionsMenu.createButton("Change player names", e -> stage.setScene(playerNamesMenu.menuScene));
         optionsMenu.createButton("Change volume", e -> createChangVolumePopUp());
         optionsMenu.createButton("Main menu", this::goToMainMenu);
+
+        // setup game over menu
+        gameOverMenu.createButton("Back to main menu", e -> gameObject.endGame());
+        gameOverMenu.createButton("Exit game", e -> stage.close());
 
         stage.setTitle("Gorillas");
         stage.getIcons().add(new Image(("/Images/Gorilla1.png")));
@@ -299,6 +305,14 @@ public class MenuController {
         return mainMenu.menuScene;
     }
 
+    public Scene getGameOverMenuScene(){
+        return gameOverMenu.menuScene;
+    }
+
+    public Label getGameOverMenuTitel(){
+        return gameOverMenu.menuTitle;
+    }
+
     public Music getMusic() {
         return music;
     }
@@ -368,6 +382,9 @@ public class MenuController {
             return menuButtons.get(index);
         }
 
+        public Label getMenuTitle() {
+            return menuTitle;
+        }
     }
 
 
