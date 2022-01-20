@@ -2,11 +2,9 @@ package application;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -22,10 +20,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.event.EventHandler;
 
-import javax.swing.*;
-import java.security.Key;
-import java.sql.Time;
-import java.util.Arrays;
 import java.util.Random;
 
 
@@ -72,7 +66,7 @@ public class GameObject {
     private EventHandler<KeyEvent> changeCastable;
     Robot robot = new Robot();
     Random r = new Random();
-    Polygon outOfScreenTrackArrow = GUIHelpers.createArrow(0,0,10,40, Math.PI);
+    Polygon outOfScreenTrackArrow = Helpers.createArrow(0,0,10,40, Math.PI);
     private int aimlineMinRadius = 35;
     private int aimlineMaxRadius = 100;
     private int turnsTillPowerUp = 0;
@@ -311,7 +305,7 @@ public class GameObject {
         removeSceneFilter(KeyEvent.KEY_PRESSED, toJumpMode);
         removeSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
         removeSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
-        double angle = GUIHelpers.getAngleOfLine(player.getPosX(), player.getPosY(), event.getX(), event.getY());
+        double angle = Helpers.getAngleOfLine(player.getPosX(), player.getPosY(), event.getX(), event.getY());
         aimLine.setStartX(player.getPosX() + aimlineMinRadius * Math.cos(angle));
         aimLine.setStartY(player.getPosY() - aimlineMinRadius * Math.sin(angle));
         aimLine.setEndX(player.getPosX() + aimlineMinRadius * Math.cos(angle));
@@ -398,7 +392,7 @@ public class GameObject {
             outOfScreen = false;
         }
 
-        stop = stop || GUIHelpers.isOutOfGame(castable.getHitBox().getBoundsInLocal(), screenX, screenY);
+        stop = stop || Helpers.isOutOfGame(castable.getHitBox().getBoundsInLocal(), screenX, screenY);
         stop = stop || level.getPlayer1().collision(castable);
         stop = stop || level.getPlayer2().collision(castable);
         if(stop){
@@ -432,7 +426,7 @@ public class GameObject {
                 Player winner = level.getPlayer1().getHitPoints() <= 0 ? level.getPlayer2() : level.getPlayer1();
                 Label tmp = menuController.getGameOverMenuTitel();
                 tmp.setText(winner.getName() + " wins!");
-                tmp.setLayoutX((screenX - GUIHelpers.textSize(tmp))/2);
+                tmp.setLayoutX((screenX - Helpers.textSize(tmp))/2);
                 menuController.getGameOverMenuTitel().setTextAlignment(TextAlignment.CENTER);
 
             }
@@ -562,7 +556,7 @@ public class GameObject {
         }
 
 
-        stop |= GUIHelpers.isOutOfGame(player.getHitBox().getBoundsInLocal(), screenX, screenY);
+        stop |= Helpers.isOutOfGame(player.getHitBox().getBoundsInLocal(), screenX, screenY);
 
         if(stop){
             jumpTimeLine.stop();

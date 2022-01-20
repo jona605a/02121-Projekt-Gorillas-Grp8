@@ -6,7 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 
-public class GUIHelpers {
+public class Helpers {
 
     public static double textSize(Label label){
         Text tmp = new Text(label.getText());
@@ -50,4 +50,22 @@ public class GUIHelpers {
 
         return x1 > x2 ? angle + Math.PI : angle;
     }
+
+    public boolean below(Bounds obj1, Bounds obj2){
+        return obj1.getMinY() > obj2.getMaxY();
+    }
+
+    public boolean above(Bounds obj1, Bounds obj2){
+        return obj1.getMaxY() < obj2.getMinY();
+    }
+
+    public boolean leftOf(Bounds obj1, Bounds obj2){
+        return obj1.getMaxX() < obj2.getMinX();
+    }
+
+    public boolean rightOf(Bounds obj1, Bounds ojb2){
+        return obj1.getMinX() > obj1.getMaxX();
+    }
+
+
 }
