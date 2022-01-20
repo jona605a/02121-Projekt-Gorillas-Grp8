@@ -37,10 +37,13 @@ public class Level {
         Building firstBuilding, lastBuilding;
         screenX = x;
         screenY = y;
+        createLevel1();
         randomLevel = new Map(screenX, screenY, true);
-        currentLevel = randomLevel;
-        game = randomLevel.getPane();
+        currentLevel = level1;
+        game = currentLevel.getPane();
         gameScene = new Scene(game, screenX, screenY);
+
+
 
         firstBuilding =  getBuildings().get(0);
         lastBuilding =  getBuildings().get(currentLevel.getNumOfBuildings() - 1);
@@ -138,6 +141,23 @@ public class Level {
         bg2.toBack();
         player1.addNodes(game);
         player2.addNodes(game);
+    }
+
+    public void createLevel1() throws Exception {
+        double width = screenX / 10;
+        level1 = new Map(screenX, screenY, false);
+        level1.createBuilding(0, new int[] {0,2,5});
+        level1.createBuilding(width * 1, new int[] {1,2,4});
+        level1.createBuilding(width * 2, new int[] {1,2,3,4});
+        level1.createBuilding(width * 3, new int[] {0,2,4});
+        level1.createBuilding(width * 4, new int[] {1,4});
+        level1.createBuilding(width * 5, new int[] {1,3,4});
+        level1.createBuilding(width * 6, new int[] {0,3,2,3,4});
+        level1.createBuilding(width * 7, new int[] {0,3,2,4});
+        level1.createBuilding(width * 8, new int[] {1,2,5});
+        level1.createBuilding(width * 9, new int[] {1,2,4});
+
+
     }
 
 

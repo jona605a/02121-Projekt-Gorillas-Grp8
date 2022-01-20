@@ -378,7 +378,7 @@ public class GameObject {
         castable.setX(castable.getX() + castable.getVelocityX() / 24);
         castable.setY(castable.getY() - castable.getVelocityY() / 24);
         castable.setVelocityY(castable.getVelocityY() + gravity / 24);
-        for(MapObject obj : level.getBuildings()){
+        for(MapObject obj : level.getMapObjects()){
             stop = stop || obj.collision(castable.getHitBox().getLayoutBounds());
         }
 
@@ -537,8 +537,8 @@ public class GameObject {
         player.setVelocityY(player.getVelocityY() + gravity / 24);
 
 
-        for(MapObject statics : level.getBuildings()){
-            stop = stop || statics.collision(player.getHitBox().getBoundsInLocal());
+        for(MapObject mapObject : level.getMapObjects()){
+            stop = stop || mapObject.collision(player.getHitBox().getBoundsInLocal());
         }
         int removeIndex = -1;
         for(PowerUp p : level.getPowerUps()){
