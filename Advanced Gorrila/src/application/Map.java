@@ -44,9 +44,10 @@ public class Map {
 
 
 
-    public void createBuilding(double x, double y, int[] stories) throws Exception {
+    public void createBuilding(double x, int[] stories) throws Exception {
         Building building = new Building(x, screenY - buildingStoryHeight * stories.length, buildingWidth,buildingStoryHeight, stories);
         buildings.add(building);
+        mapObjects.add(building);
         pane.getChildren().addAll(building.getSprites());
         numOfBuildings++;
     }
@@ -56,7 +57,10 @@ public class Map {
     }
 
     public void createPlatform(double x, double y){
-
+        Platform p = new Platform(x, y, buildingWidth / 2);
+        mapObjects.add(p);
+        platforms.add(p);
+        pane.getChildren().add(p.getSprite());
     }
 
     public AnchorPane getPane() {

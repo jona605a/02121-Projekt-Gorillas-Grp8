@@ -19,6 +19,10 @@ public class Platform extends MapObject {
 		this.height = 20;
 		sprite = new Image("/Images/Platform.png", this.width, this.height, true, false);
 		spriteView = new ImageView(sprite);
+		spriteView.setX(x);
+		spriteView.setY(y);
+		spriteView.setFitWidth(width);
+		spriteView.setFitHeight(height);
 		shape = new Rectangle(this.x, this.y, this.width, this.height);
 	}
 
