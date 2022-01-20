@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 
-public class Platform extends StaticEntity {
+public class Platform extends MapObject {
 	
 	private Rectangle shape;
 	private Image sprite;

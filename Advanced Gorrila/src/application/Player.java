@@ -24,6 +24,8 @@ public class Player {
     private Label nameLabel;
     private ImageView spriteView;
     private ProgressBar healthBar;
+    private ArrayList<PowerUp> powerUps;
+    private int numOfCoconuts;
 
     public Image gorilla1 = new Image("/Images/Gorilla1.png", 58, 58, true, false);
     public Image gorilla2 = new Image("/Images/Gorilla2.png", 58, 58, true, false);
@@ -44,12 +46,11 @@ public class Player {
         hitBox.setX(x - gorilla1.getWidth() * 0.4);
         hitBox.setY(y - gorilla1.getHeight());
         selectedCastable = new Banana(posX, posY);
+        powerUps = new ArrayList<>();
 
-        int noOfCoconuts = 10;
+        numOfCoconuts = 10;
         // Adding coconuts as ammo
-        for(int i = 0; i < noOfCoconuts; i++) {
-        	castables.add(new Coconut(x, y));
-        }
+        addCoconuts(numOfCoconuts);
 
         // Display player name
         nameLabel = new Label();
@@ -97,6 +98,12 @@ public class Player {
         }
     }
 
+    public void addCoconuts(int amount){
+        for(int i = 0; i < amount; i++){
+            castables.add(new Coconut(posX, posY));
+        }
+    }
+
     public void setSprite(Image image) {
         spriteView.setImage(image);
         spriteView.setX(posX - image.getWidth() * 0.5);
@@ -108,6 +115,26 @@ public class Player {
         hitPoints -= damage;
         hitPoints = hitPoints < 0 ? 0 : hitPoints;
         healthBar.setProgress(hitPoints / 100);
+        System.out.println(hitPoints);
+    }
+
+    public void addCastable(Castable castable) {
+        this.castables.add(castable);
+    }
+
+    public void switchCastable() {
+        if(castables.size() > 1) {
+            if(selectedCastable.getWeight() == castables.get(0).getWeight()) {
+                selectedCastable = new Coconut(posX, posY);
+            }
+            else {
+                selectedCastable = new Banana(posX, posY);
+            }
+        }
+    }
+
+    public void useCoconut() {
+        castables.remove(1);
     }
 
     public Rectangle getHitBox() {
@@ -150,6 +177,18 @@ public class Player {
         return name;
     }
 
+    public Image getGorilla1() {
+        return gorilla1;
+    }
+
+    public ArrayList<PowerUp> getPowerUps() {
+        return powerUps;
+    }
+
+    public ArrayList<Castable> getCastables() {
+        return castables;
+    }
+
     public void setName(String name) {
         this.name = name;
         nameLabel.setText(name);
@@ -179,26 +218,17 @@ public class Player {
         healthBar.setLayoutY(posY - gorilla1.getHeight()/2 - 40);
     }
 
-    public void addCastable(Castable castable) {
-    	this.castables.add(castable);
-    }
-    
-    public void addHitPoints(int hp) {
-    	this.hitPoints += hp;
+    public void setNumOfCoconuts(int numOfCoconuts) {
+        this.numOfCoconuts = numOfCoconuts;
     }
 
-    public void switchCastable() {
-    	if(castables.size() > 1) {
-    		if(selectedCastable.getWeight() == castables.get(0).getWeight()) {
-    			selectedCastable = new Coconut(posX, posY);
-    		}
-    		else {
-    			selectedCastable = new Banana(posX, posY);
-    		}
-    	}
-    }
     
-    public void useCoconut() {
-    	castables.remove(1);
+    public void setHitpoints(double hp) {
+    	hitPoints = hp;
+        if(hitPoints > 100){
+            hitPoints = 100;
+        }
     }
+
+
 }

@@ -17,12 +17,16 @@ public class Level {
     private double screenX, screenY;
     private AnchorPane game;
     private Scene gameScene;
-    private ArrayList<StaticEntity> statics = new ArrayList<StaticEntity>();
-    private double buildingWidth, buildingStoryHeight;
     private Random r = new Random();
-    private int numOfBuildings = 10;
     private ArrayList<PowerUp> powerUps;
     private int numOfPowerUps = 20;
+
+    private Map level1;
+    private Map level2;
+    private Map level3;
+    private Map randomLevel;
+    private Map currentLevel;
+
     private Image backgroundImg;
     private ImageView bg1;
     private ImageView bg2;
@@ -30,23 +34,26 @@ public class Level {
     private Timeline backgroundTimeline;
 
     Level(double x, double y) throws Exception {
+        int numOfBuildings = 0;
+        Building firstBuilding, lastBuilding;
         screenX = x;
         screenY = y;
-        game = new AnchorPane();
+        randomLevel = new Map(screenX, screenY, true);
+        currentLevel = randomLevel;
+        game = randomLevel.getPane();
         gameScene = new Scene(game, screenX, screenY);
-        buildingWidth = x / numOfBuildings;
-        buildingStoryHeight = 0.19 * screenY;
-        for(int i = 0; i < numOfBuildings; i++){
-            int stories = 2 + r.nextInt(3);
-            statics.add(new Building(buildingWidth * i, screenY - buildingStoryHeight * stories, buildingWidth,buildingStoryHeight, stories));
-            game.getChildren().addAll(statics.get(i).getSprites());
-        }
-        powerUps = PowerUpSpawner.spawnPowerUps(0,  0, screenX, screenY-buildingStoryHeight*2, numOfPowerUps, statics);
+
+        powerUps = PowerUpSpawner.spawnPowerUps(0,  0, screenX, screenY-currentLevel.getBuildingStoryHeight()*2, numOfPowerUps, getMapObjects());
         for (PowerUp powerUp : powerUps ) {
             game.getChildren().add(powerUp.getSprite());
         }
-        player1 = new Player(10,"Player 1",buildingWidth / 2, statics.get(0).getY());
-        player2 = new Player(10,"Player 2",buildingWidth / 2 + buildingWidth * (numOfBuildings - 1), statics.get((numOfBuildings - 1)).getY());
+
+        firstBuilding =  getBuildings().get(0);
+        lastBuilding =  getBuildings().get(currentLevel.getNumOfBuildings() - 1);
+
+        player1 = new Player(100,"Player 1",currentLevel.getBuildingWidth() / 2 + firstBuilding.getX(), firstBuilding.getY());
+        player2 = new Player(100,"Player 2",currentLevel.getBuildingWidth() / 2 + lastBuilding.getX(), lastBuilding.getY());
+
         backgroundImg = new Image("/Images/Sky.png", screenX, screenY, false, false);
         bg1 = new ImageView(backgroundImg);
         bg2 = new ImageView(backgroundImg);
@@ -78,6 +85,9 @@ public class Level {
     }
 
     public void setupLevel(){
+        Building firstBuilding, lastBuilding;
+
+        // setup background
         bg2IsBack = true;
         bg1.toBack();
         bg1.setX(0);
@@ -86,7 +96,35 @@ public class Level {
         bg2.setX(-screenX);
         bg2.setY(0);
         backgroundTimeline.play();
+
+        // setup players
+        firstBuilding =  getBuildings().get(0);
+        lastBuilding =  getBuildings().get(currentLevel.getNumOfBuildings() - 1);
+
+        player1.setHitpoints(100);
+        player1.setPosX(currentLevel.getBuildingWidth() / 2 + firstBuilding.getX());
+        player1.setPosY(firstBuilding.getY() - player1.gorilla1.getHeight() / 2);
+        player1.getPowerUps().clear();
+        player1.getCastables().clear();
+        player1.addCastable(new Banana(player1.getPosX(), player1.getPosY()));
+        player1.setNumOfCoconuts(10);
+        player1.addCoconuts(10);
+
+        player2.setHitpoints(100);
+        player2.setPosX(currentLevel.getBuildingWidth() / 2 + lastBuilding.getX());
+        player2.setPosY(lastBuilding.getY() - player2.gorilla1.getHeight() / 2);
+        player2.getPowerUps().clear();
+        player2.getCastables().clear();
+        player2.addCastable(new Banana(player2.getPosX(), player2.getPosY()));
+        player2.setNumOfCoconuts(10);
+        player2.addCoconuts(10);
+
+        // remove unused powerups
+
+
     }
+
+
     public Scene getGameScene() {
         return gameScene;
     }
@@ -103,13 +141,21 @@ public class Level {
         return player2;
     }
 
-    public ArrayList<StaticEntity> getStatics() {
-        return statics;
+    public ArrayList<MapObject> getMapObjects(){
+        return currentLevel.getMapObjects();
+    }
+
+    public ArrayList<Building> getBuildings() {
+        return currentLevel.getBuildings();
     }
 
     public ArrayList<PowerUp> getPowerUps() { return powerUps;}
 
     public void setPowerUps(ArrayList<PowerUp> newPowerUps) {
         this.powerUps = newPowerUps;
+    }
+
+    public Timeline getBackgroundTimeline() {
+        return backgroundTimeline;
     }
 }

@@ -8,7 +8,7 @@ import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 
-public abstract class PowerUp extends StaticEntity {
+public abstract class PowerUp extends MapObject {
 
     private Circle shape;
     private Image sprite;

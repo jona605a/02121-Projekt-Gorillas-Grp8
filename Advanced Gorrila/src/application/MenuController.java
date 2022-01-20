@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.QuadCurve;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
@@ -26,9 +25,11 @@ public class MenuController {
     private Font menuFont  = Font.loadFont(getClass().getResourceAsStream("/Fonts/Tr2n.ttf"), 14);
     private Menu mainMenu;
     private Menu playerNamesMenu;
+    private Menu pauseMenu;
     private Image img = new Image("/Images/MenuBackground.png");
     private BackgroundImage bgi = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.DEFAULT,new BackgroundSize(0,0,false,false,false,true));
     private Background bg = new Background(bgi);
+    Music music;
 
     double screenY, screenX;
 
@@ -47,23 +48,29 @@ public class MenuController {
         screenX = screenWidth;
         mainMenu = new Menu("Gorrilas");
         playerNamesMenu = new Menu("Change player names");
+        pauseMenu = new Menu("Game Paused");
 
 
 
         // add main menu buttons
 
         mainMenu.createButton("Enter Game", this::goToGame);
-        mainMenu.createButton("Change player names", this::goToPlayerNameMenu);
+        mainMenu.createButton("Change player names", e -> stage.setScene(playerNamesMenu.menuScene));
         mainMenu.createButton("Select level", this::goToGame);
+        mainMenu.createButton("Exit Game", (e) -> {stage.close();});
 
         // add player name menu buttons
         playerNamesMenu.createButton("Change player 1 name", this::changePlayer1Name);
         playerNamesMenu.createButton("Change player 2 name", this::changePlayer2Name);
         playerNamesMenu.createButton("Return to main menu", this::goToMainMenu);
 
+        pauseMenu.createButton("Resume Game", this::resumeGame);
+        pauseMenu.createButton("End game", e -> gameObject.endGame());
+        pauseMenu.createButton("Exit game", e -> stage.close());
+
         stage.setTitle("Gorillas");
         stage.getIcons().add(new Image(("/Images/Gorilla1.png")));
-        Music music = new Music(new String[]{"/Sounds/Music/RetroFunk.mp3", "/Sounds/Music/BossTime.mp3", "/Sounds/Music/Stage3.mp3"});
+        music = new Music(new String[]{"/Sounds/Music/RetroFunk.mp3", "/Sounds/Music/BossTime.mp3", "/Sounds/Music/Stage3.mp3"});
         stage.setScene(mainMenu.menuScene);
         stage.setMaximized(true);
         stage.setResizable(false);
@@ -80,13 +87,24 @@ public class MenuController {
         gameObject.gameLoop();
     }
 
+    public void resumeGame(ActionEvent event){
+        if(gameObject.isJumping()){
+            gameObject.getJumpTimeLine().play();
+        }
+        if(gameObject.isFired()){
+            gameObject.getThrownCastableTimeline().play();
+        }
+        gameObject.getLevel().getBackgroundTimeline().play();
+        stage.setScene(gameObject.getLevel().getGameScene());
+    }
+
     public void goToMainMenu(ActionEvent event){
         stage.setScene(mainMenu.menuScene);
 
     }
 
-    public void goToPlayerNameMenu(ActionEvent event){
-        stage.setScene(playerNamesMenu.menuScene);
+    public void goToPause(){
+        stage.setScene(pauseMenu.menuScene);
     }
 
     public void changePlayer1Name(ActionEvent event) {createChangePlayerNamePopUp(gameObject.getLevel().getPlayer1());}
@@ -161,6 +179,14 @@ public class MenuController {
         }
     }
 
+    public Scene getMainMenuScene(){
+        return mainMenu.menuScene;
+    }
+
+    public Music getMusic() {
+        return music;
+    }
+
     private class Menu{
         ArrayList<Button> menuButtons;
         AnchorPane menuPane;
@@ -219,7 +245,7 @@ public class MenuController {
             return menuButtons.get(index);
         }
 
-
     }
+
 
 }

@@ -8,7 +8,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Random;
 
-public class Building extends StaticEntity{
+public class Building extends MapObject {
     private Rectangle shape;
     private ImageView[] sprites;
     private static Random r = new Random();

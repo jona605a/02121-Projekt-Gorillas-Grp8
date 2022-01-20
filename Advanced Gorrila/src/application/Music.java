@@ -70,7 +70,7 @@ public class Music {
         if (song.isPlaying()) song.stop();
     }
 
-    private Sound getCurrentSong() {
+    public Sound getCurrentSong() {
         return this.musicList[this.currentSongIndex];
     }
 

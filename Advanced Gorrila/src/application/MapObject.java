@@ -3,7 +3,7 @@ package application;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 
-public abstract class StaticEntity{
+public abstract class MapObject {
 
     double x, y, width, height;
 
