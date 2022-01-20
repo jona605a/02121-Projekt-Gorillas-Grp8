@@ -169,6 +169,19 @@ public class Player {
         selectedAmmo.setImage(selectedCastable.getSpriteView().getImage());
     }
 
+    public void fireCastable(){
+        if(selectedIndex > 0){
+            castables.remove(selectedIndex);
+            selectedIndex--;
+            selectedCastable = castables.get(selectedIndex);
+        }else{
+            castables.remove(0);
+            castables.add(0, new Banana(posX, posY));
+            selectedCastable = castables.get(0);
+        }
+        selectedAmmo.setImage(selectedCastable.getSpriteView().getImage());
+    }
+
     public void switchPowerUp(){
         if(powerUps.size() > 0){
             if(selectedIndex < powerUps.size() - 1){

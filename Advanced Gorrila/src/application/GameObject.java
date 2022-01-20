@@ -225,6 +225,7 @@ public class GameObject {
         addSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
         addSceneFilter(KeyEvent.KEY_PRESSED, toJumpMode);
         addSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
+        addSceneFilter(KeyEvent.KEY_PRESSED, changePowerUps);
 
 
 
@@ -356,6 +357,7 @@ public class GameObject {
         removeFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
 
         Castable selectedCastable = player.getSelectedCastable();
+        player.fireCastable();
         thrownCastableTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/24),(e) -> {animateCastable(selectedCastable);}));
         thrownCastableTimeline.setCycleCount(Timeline.INDEFINITE);
 
@@ -446,6 +448,7 @@ public class GameObject {
                 removeFilter(MouseEvent.MOUSE_PRESSED, firePressed);
                 removeSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
                 removeSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
+                removeSceneFilter(KeyEvent.KEY_PRESSED, changePowerUps);
                 addFilter(MouseEvent.MOUSE_MOVED, drawJump);
                 addFilter(MouseEvent.MOUSE_PRESSED, jump);
                 addNode(jumpLine);
@@ -457,6 +460,7 @@ public class GameObject {
                 addFilter(MouseEvent.MOUSE_PRESSED, firePressed);
                 addSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
                 addSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
+                addSceneFilter(KeyEvent.KEY_PRESSED, changePowerUps);
                 removeFilter(MouseEvent.MOUSE_MOVED, drawJump);
                 removeFilter(MouseEvent.MOUSE_PRESSED, jump);
                 removeNode(jumpLine);
