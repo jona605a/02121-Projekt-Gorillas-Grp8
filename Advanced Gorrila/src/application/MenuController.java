@@ -31,6 +31,7 @@ public class MenuController {
     private Menu playerNamesMenu;
     private Menu pauseMenu;
     private Menu optionsMenu;
+    private Menu selectMenu;
     private Menu gameOverMenu;
     private Image img = new Image("/Images/MenuBackground.png");
     private BackgroundImage bgi = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.DEFAULT,new BackgroundSize(0,0,false,false,false,true));
@@ -56,14 +57,15 @@ public class MenuController {
         playerNamesMenu = new Menu("Change player names");
         pauseMenu = new Menu("Game Paused");
         optionsMenu = new Menu("Options");
+        selectMenu = new Menu("Select Level");
         gameOverMenu = new Menu("fill later");
 
 
 
         // add main menu buttons
 
-        mainMenu.createButton("Enter Game", this::goToGame);
-        mainMenu.createButton("Select level", this::goToGame);
+        mainMenu.createButton("Enter Game", e->goToGame());
+        mainMenu.createButton("Select level", this::goToSelect);
         mainMenu.createButton("Options", this::goToOptions);
         mainMenu.createButton("Exit Game", (e) -> {stage.close();});
 
@@ -84,6 +86,12 @@ public class MenuController {
         optionsMenu.createButton("Change volume", e -> createChangVolumePopUp());
         optionsMenu.createButton("Main menu", this::goToMainMenu);
 
+        // select level menu
+        selectMenu.createButton("Level 1", e -> goToSelectedLevel(gameObject.getLevel().level1));
+        selectMenu.createButton("Level 2", e -> goToSelectedLevel(gameObject.getLevel().level2));
+        selectMenu.createButton("Level 3", e -> goToSelectedLevel(gameObject.getLevel().level3));
+        selectMenu.createButton("Main menu", this::goToMainMenu);
+
         // setup game over menu
         gameOverMenu.createButton("Back to main menu", e -> gameObject.endGame());
         gameOverMenu.createButton("Exit game", e -> stage.close());
@@ -99,7 +107,7 @@ public class MenuController {
 
 
 
-    public void goToGame(ActionEvent event) {
+    public void goToGame() {
         gameObject.getLevel().setupLevel();
         gameObject.setPlayer1Turn(true);
         gameObject.setGameRunning(true);
@@ -136,7 +144,6 @@ public class MenuController {
 
     public void goToMainMenu(ActionEvent event){
         stage.setScene(mainMenu.menuScene);
-
     }
 
     public void goToPause(){
@@ -145,6 +152,14 @@ public class MenuController {
         stage.setScene(pauseMenu.menuScene);
     }
 
+    public void goToSelectedLevel(Map level) {
+        gameObject.getLevel().setLevel(level);
+        goToGame();
+    }
+
+    public void goToSelect(ActionEvent event){
+        stage.setScene(selectMenu.menuScene);
+    }
 
     public void goToOptions(ActionEvent event){
         stage.setScene(optionsMenu.menuScene);

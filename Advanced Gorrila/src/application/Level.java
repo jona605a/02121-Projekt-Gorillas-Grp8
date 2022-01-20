@@ -20,9 +20,9 @@ public class Level {
     private Random r = new Random();
     private int numOfPowerUps = 20;
 
-    private Map level1;
-    private Map level2;
-    private Map level3;
+    public Map level1;
+    public Map level2;
+    public Map level3;
     private Map randomLevel;
     private Map currentLevel;
 
@@ -38,12 +38,10 @@ public class Level {
         screenX = x;
         screenY = y;
         createLevel1();
+        createLevel2();
+        createLevel3();
         randomLevel = new Map(screenX, screenY, true);
-        currentLevel = level1;
-        game = currentLevel.getPane();
-        gameScene = new Scene(game, screenX, screenY);
-
-
+        currentLevel = randomLevel;
 
         firstBuilding =  getBuildings().get(0);
         lastBuilding =  getBuildings().get(currentLevel.getNumOfBuildings() - 1);
@@ -57,12 +55,8 @@ public class Level {
         backgroundTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/24), (e) -> {animateBackground();}));
         backgroundTimeline.setCycleCount(-1);
 
-        player1.addNodes(game);
-        player2.addNodes(game);
-        game.getChildren().add(bg1);
-        game.getChildren().add(bg2);
 
-
+        setLevel(randomLevel);
     }
 
     public void animateBackground(){
@@ -131,9 +125,9 @@ public class Level {
 
     }
 
-    public void setLevel(Map level){
-        currentLevel = level;
-        game = level.getPane();
+    public void setLevel(Map map){
+        currentLevel = map;
+        game = map.getPane();
         gameScene = new Scene(game, screenX, screenY);
         game.getChildren().add(bg2);
         game.getChildren().add(bg1);
@@ -146,7 +140,7 @@ public class Level {
     public void createLevel1() throws Exception {
         double width = screenX / 10;
         level1 = new Map(screenX, screenY, false);
-        level1.createBuilding(0, new int[] {0,2,5});
+        level1.createBuilding(width * 0, new int[] {0,2,5});
         level1.createBuilding(width * 1, new int[] {1,2,4});
         level1.createBuilding(width * 2, new int[] {1,2,3,4});
         level1.createBuilding(width * 3, new int[] {0,2,4});
@@ -156,8 +150,36 @@ public class Level {
         level1.createBuilding(width * 7, new int[] {0,3,2,4});
         level1.createBuilding(width * 8, new int[] {1,2,5});
         level1.createBuilding(width * 9, new int[] {1,2,4});
+    }
 
+    public void createLevel2() throws Exception {
+        double width = screenX / 10;
+        level2 = new Map(screenX, screenY, false);
+        level2.createBuilding(width * 0, new int[] {0,5});
+        level2.createBuilding(width * 1, new int[] {1,3,4});
+        level2.createBuilding(width * 2, new int[] {1,3,2,4});
+        level2.createBuilding(width * 3, new int[] {0,2,4});
+        level2.createBuilding(width * 4, new int[] {1,4});
+        level2.createBuilding(width * 5, new int[] {1,5});
+        level2.createBuilding(width * 6, new int[] {0,3,4});
+        level2.createBuilding(width * 7, new int[] {0,2,3,4});
+        level2.createBuilding(width * 8, new int[] {1,2,5});
+        level2.createBuilding(width * 9, new int[] {1,4});
+    }
 
+    public void createLevel3() throws Exception {
+        double width = screenX / 10;
+        level3 = new Map(screenX, screenY, false);
+        level3.createBuilding(width * 0, new int[] {1,3,4});
+        level3.createBuilding(width * 1, new int[] {1,4});
+        level3.createBuilding(width * 2, new int[] {0,5});
+
+        level3.createBuilding(width * 4, new int[] {1,4});
+
+        level3.createBuilding(width * 6, new int[] {0,3,2,3,4});
+        level3.createBuilding(width * 7, new int[] {0,3,2,4});
+        level3.createBuilding(width * 8, new int[] {1,2,5});
+        level3.createBuilding(width * 9, new int[] {1,2,4});
     }
 
 
