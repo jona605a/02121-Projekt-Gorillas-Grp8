@@ -6,6 +6,7 @@ import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -20,6 +21,7 @@ import javafx.util.Duration;
 import javafx.event.EventHandler;
 
 import javax.swing.*;
+import java.security.Key;
 import java.sql.Time;
 import java.util.Arrays;
 import java.util.Random;
@@ -94,7 +96,7 @@ public class GameObject {
     }
 
 
-    public void enterMenu(){
+    public void enterMenu() throws Exception {
         menuController.menuSetup(screenX, screenY, mainStage);
     }
 
@@ -207,13 +209,18 @@ public class GameObject {
         toJumpMode = event -> toggleJumpMode(event, player);
         drawJump = event -> drawJumpLine(event, player);
         jump = event -> playerJump(event, player);
+        changeCastable = event -> changeAmmoType(event, player);
+        usePowerUp = event -> usePUp(event, player);
+        changePowerUps = event -> changePowerUp(event, player);
         jumpMode = false;
         didJump =  false;
 
 
         addFilter(MouseEvent.MOUSE_MOVED, aimHandler);
         addFilter(MouseEvent.MOUSE_PRESSED, firePressed);
-        level.getGameScene().addEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+        addSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
+        addSceneFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+        addSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
 
 
 
@@ -227,15 +234,47 @@ public class GameObject {
             stop = stop || pu.collision(obj.getShape().getLayoutBounds());
         }
         if(pu.collision(level.getPlayer1().getHitBox().getLayoutBounds())){
-            level.getPlayer1().getPowerUps().add(pu);
             stop = true;
+            int removeIndex = level.getPowerUps().indexOf(pu);
+            removeNode(pu.getSprite());
+            if(pu instanceof ExtraTurnPowerUp){
+                ((ExtraTurnPowerUp) pu).onUse(this);
+            }else{
+                level.getPlayer1().addPowerUp(pu);
+            }
+            level.getPowerUps().remove(removeIndex);
         }
         if(pu.collision(level.getPlayer2().getHitBox().getLayoutBounds())){
-            level.getPlayer2().getPowerUps().add(pu);
             stop = true;
+            int removeIndex = level.getPowerUps().indexOf(pu);
+            removeNode(pu.getSprite());
+            if(pu instanceof ExtraTurnPowerUp){
+                ((ExtraTurnPowerUp) pu).onUse(this);
+            }else{
+                level.getPlayer1().addPowerUp(pu);
+            }
+            level.getPowerUps().remove(removeIndex);
         }
         if(stop){
             powerUpFallTimeline.stop();
+        }
+    }
+
+    public void changePowerUp(KeyEvent event, Player player){
+        if(event.getCode() == KeyCode.S){
+            player.switchPowerUp();
+        }
+    }
+
+    public void usePUp(KeyEvent event, Player player){
+        if(event.getCode() == KeyCode.U){
+            player.usePowerUp();
+        }
+    }
+
+    public void changeAmmoType(KeyEvent event, Player player){
+        if(event.getCode() == KeyCode.A){
+            player.switchCastable();
         }
     }
 
@@ -263,8 +302,10 @@ public class GameObject {
 
         // firing setup
         firing = true;
-        level.getGameScene().removeEventFilter(KeyEvent.KEY_PRESSED, enterPause);
-        level.getGameScene().removeEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+        removeSceneFilter(KeyEvent.KEY_PRESSED, enterPause);
+        removeSceneFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+        removeSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
+        removeSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
         double angle = GUIHelpers.getAngleOfLine(player.getPosX(), player.getPosY(), event.getX(), event.getY());
         aimLine.setStartX(player.getPosX() + aimlineMinRadius * Math.cos(angle));
         aimLine.setStartY(player.getPosY() - aimlineMinRadius * Math.sin(angle));
@@ -362,7 +403,10 @@ public class GameObject {
             thrownCastableTimeline.stop();
             removeFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
             if(!didJump){
-                level.getGameScene().removeEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+                removeSceneFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+                removeSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
+                removeSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
+                removeSceneFilter(KeyEvent.KEY_PRESSED, changePowerUps);
             }
 
 
@@ -385,6 +429,8 @@ public class GameObject {
             if(!jumpMode){
                 removeFilter(MouseEvent.MOUSE_MOVED, aimHandler);
                 removeFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+                removeSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
+                removeSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
                 addFilter(MouseEvent.MOUSE_MOVED, drawJump);
                 addFilter(MouseEvent.MOUSE_PRESSED, jump);
                 addNode(jumpLine);
@@ -394,6 +440,8 @@ public class GameObject {
             }else if(!didJump){
                 addFilter(MouseEvent.MOUSE_MOVED, aimHandler);
                 addFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+                addSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
+                addSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
                 removeFilter(MouseEvent.MOUSE_MOVED, drawJump);
                 removeFilter(MouseEvent.MOUSE_PRESSED, jump);
                 removeNode(jumpLine);
@@ -480,9 +528,14 @@ public class GameObject {
         int removeIndex = -1;
         for(PowerUp p : level.getPowerUps()){
             if(p.collision(player.getHitBox().getLayoutBounds())){
-                player.getPowerUps().add(p);
+
                 removeIndex = level.getPowerUps().indexOf(p);
                 removeNode(p.getSprite());
+                if(p instanceof ExtraTurnPowerUp){
+                    ((ExtraTurnPowerUp) p).onUse(this);
+                }else{
+                    player.addPowerUp(p);
+                }
             }
         }
         if(removeIndex > -1){
@@ -496,6 +549,9 @@ public class GameObject {
             jumpTimeLine.stop();
             addFilter(MouseEvent.MOUSE_MOVED, aimHandler);
             addFilter(MouseEvent.MOUSE_PRESSED, firePressed);
+            addSceneFilter(KeyEvent.KEY_PRESSED, changeCastable);
+            addSceneFilter(KeyEvent.KEY_PRESSED, usePowerUp);
+            addSceneFilter(KeyEvent.KEY_PRESSED, changePowerUps);
             addNode(aimLine);
             drawAimline(robot.getMouseX(), robot.getMouseY(), player.getPosX(), player.getPosY());
             jumping = false;
@@ -543,6 +599,14 @@ public class GameObject {
 
     public void removeFilter(EventType e, EventHandler eH){
         level.getGame().removeEventFilter(e, eH);
+    }
+
+    public void addSceneFilter(EventType e, EventHandler eH){
+        level.getGameScene().addEventFilter(e, eH);
+    }
+
+    public void removeSceneFilter(EventType e, EventHandler eH){
+        level.getGameScene().removeEventFilter(e, eH);
     }
 
     public MenuController getMenuController() {

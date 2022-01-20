@@ -6,6 +6,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -88,6 +89,7 @@ public class Player {
         selectedAmmo.setY(screenY - 100);
 
 
+
         powerUpImage.setX(x + 5);
         powerUpImage.setY(screenY - 100);
         powerUpImage.setPreserveRatio(true);
@@ -128,6 +130,15 @@ public class Player {
         }
     }
 
+    public void addPowerUp(PowerUp p){
+        powerUps.add(p);
+        System.out.println(powerUps.size());
+        if(powerUps.size() == 1){
+            selectedPowerUp = p;
+            powerUpImage.setImage(p.getSprite().getImage());
+        }
+    }
+
     public void setSprite(Image image) {
         spriteView.setImage(image);
         spriteView.setX(posX - image.getWidth() * 0.5);
@@ -156,6 +167,18 @@ public class Player {
             selectedIndex = 0;
         }
         selectedAmmo.setImage(selectedCastable.getSpriteView().getImage());
+    }
+
+    public void switchPowerUp(){
+        if(powerUps.size() > 0){
+            if(selectedIndex < powerUps.size() - 1){
+                selectedIndex++;
+            }else{
+                selectedIndex = 0;
+            }
+            selectedPowerUp = powerUps.get(selectedIndex);
+            powerUpImage.setImage(selectedPowerUp.getSprite().getImage());
+        }
     }
 
     public void usePowerUp(){
@@ -271,6 +294,7 @@ public class Player {
         if(hitPoints > 100){
             hitPoints = 100;
         }
+        healthBar.setProgress(hitPoints / 100);
     }
 
 

@@ -46,7 +46,7 @@ public class MenuController {
     }
 
 
-    public void menuSetup(double screenWidth, double screenHeight, Stage mainStage){
+    public void menuSetup(double screenWidth, double screenHeight, Stage mainStage) throws Exception{
 
         stage = mainStage;
         screenY = screenHeight;
@@ -93,8 +93,8 @@ public class MenuController {
 
 
 
-    public void goToGame(ActionEvent event){
-        gameObject.getLevel().setupLevel(); // does nothing?
+    public void goToGame(ActionEvent event) {
+        gameObject.getLevel().setupLevel();
         gameObject.setPlayer1Turn(true);
         gameObject.setGameRunning(true);
         stage.setScene(gameObject.getLevel().getGameScene());

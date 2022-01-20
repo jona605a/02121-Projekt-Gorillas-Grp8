@@ -78,7 +78,7 @@ public class Level {
         }
     }
 
-    public void setupLevel(){
+    public void setupLevel() {
         Building firstBuilding, lastBuilding;
 
         // setup background
@@ -90,6 +90,16 @@ public class Level {
         bg2.setX(-screenX);
         bg2.setY(0);
         backgroundTimeline.play();
+
+        if(currentLevel == randomLevel){
+            try{
+                randomLevel = new Map(screenX, screenY, true);
+            }catch (Exception e){
+
+            }
+
+            setLevel(randomLevel);
+        }
 
         // setup players
         firstBuilding =  getBuildings().get(0);
@@ -116,6 +126,18 @@ public class Level {
         // remove unused powerups
 
 
+    }
+
+    public void setLevel(Map level){
+        currentLevel = level;
+        game = level.getPane();
+        gameScene = new Scene(game, screenX, screenY);
+        game.getChildren().add(bg2);
+        game.getChildren().add(bg1);
+        bg1.toBack();
+        bg2.toBack();
+        player1.addNodes(game);
+        player2.addNodes(game);
     }
 
 
