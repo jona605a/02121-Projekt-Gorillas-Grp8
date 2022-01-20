@@ -254,6 +254,7 @@ public class GameObject {
             }
             level.getPowerUps().remove(removeIndex);
         }
+        stop = stop || Helpers.isOutOfGame(pu.getShape().getBoundsInLocal(), screenX, screenY);
         if(stop){
             powerUpFallTimeline.stop();
         }

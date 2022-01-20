@@ -180,6 +180,7 @@ public class Level {
         level3.createBuilding(width * 7, new int[] {0,3,2,4});
         level3.createBuilding(width * 8, new int[] {1,2,5});
         level3.createBuilding(width * 9, new int[] {1,2,4});
+        level3.createPlatform(200,250);
     }
 
 
