@@ -7,7 +7,7 @@ public class SlowBulletPowerUp extends  PowerUp{
     }
 
     public void onUse(Player player) {
-        // Get current player's thrown castable and give it double speed
+        // Get current player's thrown castable and give it half speed
         Castable selectedCastable = player.getSelectedCastable();
         selectedCastable.setWeight(selectedCastable.getWeight()  * 2);
     }

@@ -361,7 +361,7 @@ public class MenuController {
             menuTitle.setFont(new Font("TR2N",100));
             menuTitle.setTextFill(Color.web("#ff7b00"));
             menuTitle.setText(title);
-            menuTitle.setLayoutX((screenX - GUIHelpers.textSize(menuTitle))/2);
+            menuTitle.setLayoutX((screenX - Helpers.textSize(menuTitle))/2);
             menuTitle.setLayoutY(15);
             menuTitle.setTextAlignment(TextAlignment.CENTER);
             menuPane.getChildren().add(menuTitle);

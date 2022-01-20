@@ -6,8 +6,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -64,7 +62,7 @@ public class Player {
         nameLabel = new Label();
         nameLabel.setFont(new Font("Verdana", 16));
         nameLabel.setText(this.name);
-        nameLabel.setLayoutX(posX - GUIHelpers.textSize(nameLabel)/2);
+        nameLabel.setLayoutX(posX - Helpers.textSize(nameLabel)/2);
         nameLabel.setLayoutY(posY - (gorilla1.getHeight()/2 + 25));
         nameLabel.setTextAlignment(TextAlignment.CENTER);
 
@@ -165,6 +163,19 @@ public class Player {
         }else{
             selectedCastable = castables.get(0);
             selectedIndex = 0;
+        }
+        selectedAmmo.setImage(selectedCastable.getSpriteView().getImage());
+    }
+
+    public void fireCastable(){
+        if(selectedIndex > 0){
+            castables.remove(selectedIndex);
+            selectedIndex--;
+            selectedCastable = castables.get(selectedIndex);
+        }else{
+            castables.remove(0);
+            castables.add(0, new Banana(posX, posY));
+            selectedCastable = castables.get(0);
         }
         selectedAmmo.setImage(selectedCastable.getSpriteView().getImage());
     }
@@ -272,7 +283,7 @@ public class Player {
         this.posX = posX;
         hitBox.setX(posX - gorilla1.getWidth() * 0.4);
         spriteView.setX(posX - gorilla1.getWidth() * 0.5);
-        nameLabel.setLayoutX(posX - GUIHelpers.textSize(nameLabel)/2);
+        nameLabel.setLayoutX(posX - Helpers.textSize(nameLabel)/2);
         healthBar.setLayoutX(posX - 30);
     }
 
