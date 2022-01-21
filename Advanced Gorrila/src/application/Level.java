@@ -108,8 +108,7 @@ public class Level {
         player1.getPowerUps().clear();
         player1.getCastables().clear();
         player1.addCastable(new Banana(player1.getPosX(), player1.getPosY()));
-        player1.setNumOfCoconuts(10);
-        player1.addCoconuts(10);
+        player1.addCoconuts(1);
 
         player2.setHitpoints(100);
         player2.setPosX(currentLevel.getBuildingWidth() / 2 + lastBuilding.getX());
@@ -117,12 +116,7 @@ public class Level {
         player2.getPowerUps().clear();
         player2.getCastables().clear();
         player2.addCastable(new Banana(player2.getPosX(), player2.getPosY()));
-        player2.setNumOfCoconuts(10);
-        player2.addCoconuts(10);
-
-        // remove unused powerups
-
-
+        player2.addCoconuts(1);
     }
 
     public void setLevel(Map map){
