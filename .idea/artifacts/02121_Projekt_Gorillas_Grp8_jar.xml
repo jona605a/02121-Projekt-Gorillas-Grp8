@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="02121-Projekt-Gorillas-Grp8:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/02121_Projekt_Gorillas_Grp8_jar</output-path>
+    <root id="archive" name="02121-Projekt-Gorillas-Grp8.jar">
+      <element id="module-output" name="02121-Projekt-Gorillas-Grp8" />
+      <element id="module-source" name="02121-Projekt-Gorillas-Grp8" />
+    </root>
+  </artifact>
+</component>
