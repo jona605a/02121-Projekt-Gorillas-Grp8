@@ -49,7 +49,7 @@ public class Level {
         player1 = new Player(100,"Player 1",currentLevel.getBuildingWidth() / 2 + firstBuilding.getX(), firstBuilding.getY(), screenY);
         player2 = new Player(100,"Player 2",currentLevel.getBuildingWidth() / 2 + lastBuilding.getX(), lastBuilding.getY(), screenY);
 
-        backgroundImg = new Image("/Images/Sky.png", screenX, screenY, false, false);
+        backgroundImg = new Image(ClassLoader.getSystemResource("Images/Sky.png").toString(), screenX, screenY, false, false);
         bg1 = new ImageView(backgroundImg);
         bg2 = new ImageView(backgroundImg);
         backgroundTimeline = new Timeline(new KeyFrame(Duration.millis(1000.0/24), (e) -> {animateBackground();}));

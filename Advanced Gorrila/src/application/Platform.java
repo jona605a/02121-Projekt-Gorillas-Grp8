@@ -17,7 +17,7 @@ public class Platform extends MapObject {
 		this.y = y;
 		this.width = width;
 		this.height = 20;
-		sprite = new Image("/Images/Platform.png", this.width, this.height, true, false);
+		sprite = new Image(ClassLoader.getSystemResource("Images/Platform.png").toString(), this.width, this.height, true, false);
 		spriteView = new ImageView(sprite);
 		spriteView.setX(x);
 		spriteView.setY(y);

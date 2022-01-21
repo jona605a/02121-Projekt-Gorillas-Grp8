@@ -33,7 +33,7 @@ public class MenuController {
     private Menu optionsMenu;
     private Menu selectMenu;
     private Menu gameOverMenu;
-    private Image img = new Image("/Images/MenuBackground.png");
+    private Image img = new Image(ClassLoader.getSystemResource("Images/MenuBackground.png").toString());
     private BackgroundImage bgi = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.DEFAULT,new BackgroundSize(0,0,false,false,false,true));
     private Background bg = new Background(bgi);
     Music music;
