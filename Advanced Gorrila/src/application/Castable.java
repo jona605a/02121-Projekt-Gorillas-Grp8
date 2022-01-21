@@ -11,7 +11,7 @@ public class Castable {
     protected Circle hitBox;
     protected double weight;
     protected ImageView spriteView;
-    protected Image coconut = new Image("/Images/Coconut.png", 20, 20, true, false);
+    protected Image coconut = new Image(ClassLoader.getSystemResource("Images/Coconut.png").toString(), 20, 20, true, false);
     protected Image currentImage;
 
 

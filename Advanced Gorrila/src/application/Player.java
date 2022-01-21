@@ -27,13 +27,14 @@ public class Player {
     private PowerUp selectedPowerUp;
     private int numOfCoconuts;
     private int selectedIndex = 0;
-    private Image redX = new Image("/Images/X.png");
+    //private Image redX = new Image("/Images/X.png");
+    private Image redX = new Image(ClassLoader.getSystemResource("Images/X.png").toString());
     private ImageView powerUpImage = new ImageView(redX);
     private ImageView selectedAmmo = new ImageView();
-
-    public Image gorilla1 = new Image("/Images/Gorilla1.png", 58, 58, true, false);
-    public Image gorilla2 = new Image("/Images/Gorilla2.png", 58, 58, true, false);
-    public Image gorilla3 = new Image("/Images/Gorilla3.png", 58, 58, true, false);
+    //ClassLoader.getSystemResource().toString()
+    public Image gorilla1 = new Image(ClassLoader.getSystemResource("Images/Gorilla1.png").toString(), 58, 58, true, false);
+    public Image gorilla2 = new Image(ClassLoader.getSystemResource("Images/Gorilla2.png").toString(), 58, 58, true, false);
+    public Image gorilla3 = new Image(ClassLoader.getSystemResource("Images/Gorilla3.png").toString(), 58, 58, true, false);
 
 
     Player(double hp, String name, double x, double y, double screenY){

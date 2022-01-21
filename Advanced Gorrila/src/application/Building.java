@@ -13,12 +13,12 @@ public class Building extends MapObject {
     private ImageView[] sprites;
     private static Random r = new Random();
     private static Image[] images = new Image[] {
-            new Image("/Images/Brick Wall.png"),
-            new Image("/Images/House with inhabitant high.png"),
-            new Image("/Images/Brick Wall middle.png"),
-            new Image("/Images/Building middle.png"),
-            new Image("/Images/Flat Roof.png"),
-            new Image("/Images/Roof with stuff.png")
+            new Image(ClassLoader.getSystemResource("Images/Brick Wall.png").toString()),
+            new Image(ClassLoader.getSystemResource("Images/House with inhabitant high.png").toString()),
+            new Image(ClassLoader.getSystemResource("Images/Brick Wall middle.png").toString()),
+            new Image(ClassLoader.getSystemResource("Images/Building middle.png").toString()),
+            new Image(ClassLoader.getSystemResource("Images/Flat Roof.png").toString()),
+            new Image(ClassLoader.getSystemResource("Images/Roof with stuff.png").toString())
     };
     private double roofSize = 0.55;
 

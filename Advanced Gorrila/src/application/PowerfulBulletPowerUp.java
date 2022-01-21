@@ -2,7 +2,7 @@ package application;
 
 public class PowerfulBulletPowerUp extends PowerUp{
     public PowerfulBulletPowerUp(double x, double y, int r) {
-        super(x, y, r, "/Images/PowerfulBulletPUP.png");
+        super(x, y, r, ClassLoader.getSystemResource("Images/PowerfulBulletPUP.png").toString());
     }
 
     public void onUse(Player player) {

@@ -5,7 +5,7 @@ import javafx.scene.shape.Circle;
 
 public class Banana extends Castable{
 
-    public Image banana = new Image("/Images/Banan.png", 20, 20, true, false);
+    public Image banana = new Image(ClassLoader.getSystemResource("Images/Banan.png").toString(), 20, 20, true, false);
 
     Banana(double x, double y) {
         super(x, y);
