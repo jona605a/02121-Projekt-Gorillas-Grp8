@@ -85,7 +85,6 @@ public class GameObject {
         jumpLine.setFill(Color.TRANSPARENT);
         jumpLine.setStroke(Color.BLACK);
         enterPause = event -> enterPauseMenu(event);
-        level.getGameScene().addEventFilter(KeyEvent.KEY_PRESSED, enterPause);
         mainStage.addEventFilter(KeyEvent.KEY_PRESSED, (e) -> toggleMute(e));
 
     }
@@ -133,7 +132,8 @@ public class GameObject {
         removeNode(jumpLine);
         removeNode(level.getPlayer1().getSelectedCastable().getSpriteView());
         removeNode(level.getPlayer2().getSelectedCastable().getSpriteView());
-        level.getGameScene().removeEventFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+        removeSceneFilter(KeyEvent.KEY_PRESSED, toJumpMode);
+        removeSceneFilter(KeyEvent.KEY_PRESSED, enterPause);
         removeFilter(MouseEvent.MOUSE_MOVED, aimHandler);
         removeFilter(MouseEvent.MOUSE_PRESSED,firePressed);
         removeFilter(MouseEvent.MOUSE_RELEASED, fireReleased);
@@ -200,6 +200,8 @@ public class GameObject {
     }
 
     public void playerTurn(Player player){
+
+        // initialize event handlers
         aimHandler  = event -> drawAimline(event, player.getPosX(), player.getPosY());
         firePressed = event -> startFireIncrease(event, player);
         fireReleased = event -> fireCastable(event, player);
@@ -226,8 +228,11 @@ public class GameObject {
 
     public void animatePowerUp(PowerUp pu){
         boolean stop = false;
+        // update position and velocity
         pu.setY(pu.getY() - powerUpVelocity);
         powerUpVelocity += gravity / 100;
+
+        // check for collision
         for(MapObject obj : level.getMapObjects()){
             stop = stop || pu.collision(obj.getShape().getLayoutBounds());
         }
@@ -249,7 +254,7 @@ public class GameObject {
             if(pu instanceof ExtraTurnPowerUp){
                 ((ExtraTurnPowerUp) pu).onUse(this);
             }else{
-                level.getPlayer1().addPowerUp(pu);
+                level.getPlayer2().addPowerUp(pu);
             }
             level.getPowerUps().remove(removeIndex);
         }
@@ -258,6 +263,7 @@ public class GameObject {
             powerUpFallTimeline.stop();
         }
     }
+
 
     public void changePowerUp(KeyEvent event, Player player){
         if(event.getCode() == KeyCode.S){
@@ -535,7 +541,7 @@ public class GameObject {
 
 
         for(MapObject mapObject : level.getMapObjects()){
-            stop = stop || mapObject.collision(player.getHitBox().getBoundsInLocal());
+            stop = stop || player.collision(mapObject.getShape().getBoundsInLocal());
         }
         int removeIndex = -1;
         for(PowerUp p : level.getPowerUps()){
@@ -639,6 +645,10 @@ public class GameObject {
 
     public Timeline getPowerUpFallTimeline() {
         return powerUpFallTimeline;
+    }
+
+    public EventHandler<KeyEvent> getEnterPause() {
+        return enterPause;
     }
 
     public double getVolume() {
