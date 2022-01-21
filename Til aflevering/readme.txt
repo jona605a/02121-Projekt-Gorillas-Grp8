@@ -8,6 +8,19 @@ De vedhæftede jar-filer til SimpGorillas og AdvancedGorillas burde kunne afvikl
 Der er ingen eksterne jar-filer. 
 
 
+## SimpGorillas ##
+
+For at spille SimpGorillas bruges kommandolinjen. 
+Kommandolinjen bruges til følgende:
+- Indtaste skærmens længde og bredde
+- Indtaste vinkel for kast
+- Indtaste hastighed for kast
+- Se hvornår man har ramt den anden spiller
+- Se hvor mange points man har
+
+Vigtig note: Programmet venter på et input, så vinduet til spillet kan godt fryse mens det sker. Vi ville dog hellere arbejde på Advanced Gorillas end at løse dette problem. 
+
+
 ### Kontrol i spillet ###
 
 Herunder ses hvordan man styrer i den avancerede version af spillet
