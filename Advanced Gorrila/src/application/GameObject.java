@@ -72,7 +72,6 @@ public class GameObject {
     private int turnsTillPowerUp = 0;
     private double powerUpVelocity = 0;
 
-
     GameObject(Stage mainStage) throws Exception {
         this.mainStage = mainStage;
         player1Turn = true;
@@ -174,7 +173,7 @@ public class GameObject {
                 case 0 -> (new FastBulletPowerUp(x, y, radius));
                 case 1 -> (new SlowBulletPowerUp(x, y, radius));
                 case 2 -> (new ExtraAmmoPowerUp(x, y, radius));
-                case 3 -> (new ExtraHPPowerUp(x, y, radius)); //Missing sprite
+                case 3 -> (new ExtraHPPowerUp(x, y, radius));
                 case 4 -> (new PowerfulBulletPowerUp(x, y, radius));
                 case 5 -> (new ExtraTurnPowerUp(x, y, radius));
                 default -> new ExtraAmmoPowerUp(x,y,radius);
@@ -397,7 +396,6 @@ public class GameObject {
         stop = stop || level.getPlayer1().collision(castable);
         stop = stop || level.getPlayer2().collision(castable);
         if(stop){
-
             // end of turn
             // remove all listeners
             removeNode(castable.getSpriteView());

@@ -4,6 +4,7 @@ public class Music {
 
     private Sound[] musicList;
     private int currentSongIndex = 0;
+    private final double BASE_VOLUME = 0.2;
 
     public Music(String[] songs) {
         this(songs, 0);
@@ -15,11 +16,12 @@ public class Music {
 
     public Music(String[] songs, int startSongIndex) {
 
+        // Convert list of paths of music to a list of sound-objects
         musicList = new Sound[songs.length];
         for (int i = 0; i < songs.length; i++) {
             musicList[i] = new Sound(songs[i]);
         }
-        this.changeVolume(0.2);
+        this.changeVolume(BASE_VOLUME);
         this.currentSongIndex = startSongIndex;
         this.playSong();
     }
@@ -75,12 +77,14 @@ public class Music {
     }
 
     private void onSongFinished() {
+        // Play next song in queue
         this.currentSongIndex++;
         if (currentSongIndex == this.musicList.length) currentSongIndex = 0;
         this.playSong();
     }
 
     private static int getSongIndex(Sound[] songs, String path) {
+        // return index of the specified song
         for (int i = 0; i < songs.length; i++) {
             if (songs[i].getPath() == path) return i;
         }
