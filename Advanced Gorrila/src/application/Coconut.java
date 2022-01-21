@@ -4,6 +4,8 @@ import javafx.scene.shape.Circle;
 
 public class Coconut extends Castable {
 	
+	public Image coconut = new Image(ClassLoader.getSystemResource("Images/Coconut.png").toString(), 20, 20, true, false);
+	
 	//A harder hitting castable than the regular banana.
 
 	Coconut(double x, double y) {
