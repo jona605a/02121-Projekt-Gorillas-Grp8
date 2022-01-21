@@ -111,6 +111,7 @@ public class MenuController {
         gameObject.getLevel().setupLevel();
         gameObject.setPlayer1Turn(true);
         gameObject.setGameRunning(true);
+        gameObject.addSceneFilter(KeyEvent.KEY_PRESSED, gameObject.getEnterPause());
         stage.setScene(gameObject.getLevel().getGameScene());
         gameObject.gameLoop();
     }
@@ -124,6 +125,7 @@ public class MenuController {
         }
         gameObject.getLevel().getBackgroundTimeline().play();
         stage.setScene(gameObject.getLevel().getGameScene());
+        stage.setMaximized(true);
     }
 
     public void resumeGame(KeyEvent event){

@@ -90,7 +90,7 @@ public class Level {
 
         if(currentLevel == randomLevel){
             try{
-                randomLevel = new Map(screenX, screenY, true);
+                randomLevel.newRandom();
             }catch (Exception e){
 
             }
@@ -121,8 +121,9 @@ public class Level {
 
     public void setLevel(Map map){
         currentLevel = map;
+        map.reset();
         game = map.getPane();
-        gameScene = new Scene(game, screenX, screenY);
+        gameScene = map.getScene();
         game.getChildren().add(bg2);
         game.getChildren().add(bg1);
         bg1.toBack();
