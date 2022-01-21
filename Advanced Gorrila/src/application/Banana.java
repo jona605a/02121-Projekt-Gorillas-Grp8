@@ -11,7 +11,7 @@ public class Banana extends Castable{
         super(x, y);
         weight = 1;
         hitBox = new Circle(x,y,4);
-        damage = 10;
+        damage = 30;
 
         setSprite(banana);
     }

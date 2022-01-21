@@ -8,7 +8,7 @@ public class Coconut extends Castable {
 
 	Coconut(double x, double y) {
 		super(x, y);
-		damage = 20;
+		damage = 50;
 		weight = 2;
 		hitBox = new Circle(x,y,6.5, Color.BROWN);
         hitBox.setStroke(Color.BLACK);
