@@ -27,11 +27,9 @@ public class Player {
     private PowerUp selectedPowerUp;
     private int numOfCoconuts;
     private int selectedIndex = 0;
-    //private Image redX = new Image("/Images/X.png");
     private Image redX = new Image(ClassLoader.getSystemResource("Images/X.png").toString());
     private ImageView powerUpImage = new ImageView(redX);
     private ImageView selectedAmmo = new ImageView();
-    //ClassLoader.getSystemResource().toString()
     public Image gorilla1 = new Image(ClassLoader.getSystemResource("Images/Gorilla1.png").toString(), 58, 58, true, false);
     public Image gorilla2 = new Image(ClassLoader.getSystemResource("Images/Gorilla2.png").toString(), 58, 58, true, false);
     public Image gorilla3 = new Image(ClassLoader.getSystemResource("Images/Gorilla3.png").toString(), 58, 58, true, false);
@@ -54,10 +52,6 @@ public class Player {
         powerUps = new ArrayList<>();
 
         selectedAmmo.setImage(selectedCastable.getSpriteView().getImage());
-
-        numOfCoconuts = 10;
-        // Adding coconuts as ammo
-        addCoconuts(numOfCoconuts);
 
         // Display player name
         nameLabel = new Label();
@@ -296,9 +290,6 @@ public class Player {
         healthBar.setLayoutY(posY - gorilla1.getHeight()/2 - 40);
     }
 
-    public void setNumOfCoconuts(int numOfCoconuts) {
-        this.numOfCoconuts = numOfCoconuts;
-    }
 
     
     public void setHitpoints(double hp) {
